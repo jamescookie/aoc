@@ -31,16 +31,15 @@ class Day9Spec extends Specification {
         expect:
         1125899906842624 == new IntCode(0, [104,1125899906842624,99]).process()
     }
-//
-//    def "part1"() {
-//        def intCode = new IntCode(1, puzzleInput.clone())
-//        while (true) {
-//            println intCode.process()
-//            if (intCode.state == IntCode.State.FINISHED) break
-//        }
-//
-//        expect:
-//        intCode.output == 1
-//    }
+
+    def "part1"() {
+        expect:
+        new IntCode(1, puzzleInput).process() == 3546494377
+    }
+
+    def "part2"() {
+        expect:
+        new IntCode(2, puzzleInput).process() == 47253
+    }
 
 }

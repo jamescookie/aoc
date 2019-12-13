@@ -20,7 +20,7 @@ class IntCode {
         return process()
     }
 
-    private Long findParameter(String instruction, int offset) {
+    private Long findParameterOffset(String instruction, int offset) {
         def where = 0
         switch (instruction) {
             case '0':
@@ -36,7 +36,7 @@ class IntCode {
         if (programme[where] == null) {
             programme[where] = 0
         }
-        return programme[where]
+        return where
     }
 
     def processUntilNonZero() {
@@ -53,11 +53,15 @@ class IntCode {
             def instruction = Integer.parseInt(instructions[-2..-1])
             Long one = null
             Long two = null
+            Long three = null
             Long move = 0
-            if (instruction in [1, 2, 4, 5, 6, 7, 8, 9]) {
-                one = findParameter(instructions[-3], 1)
-                if (!(instruction in [4, 9])) {
-                    two = findParameter(instructions[-4], 2)
+            if (instruction in [1, 2, 3, 4, 5, 6, 7, 8, 9]) {
+                one = findParameterOffset(instructions[-3], 1)
+                if (!(instruction in [3, 4, 9])) {
+                    two = findParameterOffset(instructions[-4], 2)
+                }
+                if (instruction in [1,2,7,8]) {
+                    three = findParameterOffset(instructions[-5], 3)
                 }
             }
 //            println "instruction: " + instruction
@@ -65,42 +69,42 @@ class IntCode {
 //            println "two: " + two
             switch (instruction) {
                 case 1:
-                    programme[programme[position + 3]] = one + two
+                    programme[three] = getValue(one) + getValue(two)
                     move = 4
                     break
                 case 2:
-                    programme[programme[position + 3]] = one * two
+                    programme[three] = getValue(one) * getValue(two)
                     move = 4
                     break
                 case 3:
                     if (inputPointer >= input.size()) {
                         state = State.AWAITING_INPUT
                     } else {
-                        programme[programme[position + 1]] = input[inputPointer++]
+                        programme[one] = input[inputPointer++]
                         move = 2
                     }
                     break
                 case 4:
-                    output = one
+                    output = getValue(one)
                     move = 2
                     state = State.PAUSED
                     break
                 case 5:
-                    position = one != 0 ? two : position + 3
+                    position = getValue(one) != 0 ? getValue(two) : position + 3
                     break
                 case 6:
-                    position = one == 0 ? two : position + 3
+                    position = getValue(one) == 0 ? getValue(two) : position + 3
                     break
                 case 7:
-                    programme[programme[position + 3]] = one < two ? 1 : 0
+                    programme[three] = getValue(one) < getValue(two) ? 1 : 0
                     move = 4
                     break
                 case 8:
-                    programme[programme[position + 3]] = one == two ? 1 : 0
+                    programme[three] = getValue(one) == getValue(two) ? 1 : 0
                     move = 4
                     break
                 case 9:
-                    relativeBase += one
+                    relativeBase += getValue(one)
                     move = 2
                     break
                 default:
@@ -110,6 +114,10 @@ class IntCode {
 //            println programme
         }
         return output
+    }
+
+    private long getValue(long offset) {
+        programme[offset]
     }
 
     enum State {
