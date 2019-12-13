@@ -31,42 +31,17 @@ class MonitoringStation {
 
     def howManySeen(point) {
         def seen = []
-        for (int i = 1; i <= max; i++) {
-            def points = findPoints(point, i)?.findAll { it.x >= 0 && it.y >= 0 && space[it.x] && space[it.x][it.y] }
-            points.removeIf {blockedBy(point, it, seen)}
-            seen += points
+        for (int i = 0; i < space.size(); i++) {
+            def row = space[i]
+            for (int j = 0; j < row.size(); j++) {
+                if (row[j]) {
+                    if (!(point.x == i && point.y == j)) {
+                        seen += tanLine(point, new Point(i, j))
+                    }
+                }
+            }
         }
-        return seen.size()
-    }
-
-    static def findPoints(Point point, int distance) {
-        Point corner1 = point.clone()
-        Point corner2 = point.clone()
-        Point corner3 = point.clone()
-        Point corner4 = point.clone()
-        corner1.translate(-distance, distance)
-        corner2.translate(distance, distance)
-        corner3.translate(distance, -distance)
-        corner4.translate(-distance, -distance)
-        return pointsBetween(corner1.clone(), corner2, 1, 0) +
-                pointsBetween(corner2.clone(), corner3, 0, -1) +
-                pointsBetween(corner3.clone(), corner4, -1, 0) +
-                pointsBetween(corner4.clone(), corner1, 0, 1)
-    }
-
-    static def pointsBetween(Point pointA, Point pointB, int x, int y) {
-        def points = []
-        while (pointA != pointB) {
-            points.add(pointA.clone())
-            pointA.translate(x, y)
-        }
-        return points
-    }
-
-    static def blockedBy(Point original, Point newPoint, seen) {
-        def myLine = tanLine(original, newPoint)
-
-        return seen.find{tanLine(original, it) == myLine} != null
+        return seen.unique().size()
     }
 
     private static Double tanLine(Point pointA, Point pointB) {
