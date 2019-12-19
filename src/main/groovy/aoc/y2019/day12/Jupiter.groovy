@@ -1,10 +1,12 @@
 package aoc.y2019.day12;
 
 class Jupiter {
-    List<Moon> moons;
+    List<Moon> moons
+    String initialState
 
     Jupiter(List<Moon> moons) {
         this.moons = moons
+        this.initialState = toString()
     }
 
     def doSteps(int number) {
@@ -26,5 +28,19 @@ class Jupiter {
         }
         moons.each {it.move()}
         return this
+    }
+
+    long findPreviousStep() {
+        long counter = 1
+        step()
+        while (toString() != initialState) {
+            counter++
+            step()
+        }
+        return counter
+    }
+
+    String toString() {
+        moons.collect {it.toString()}.join(",")
     }
 }
