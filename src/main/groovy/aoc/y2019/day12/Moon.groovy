@@ -5,6 +5,18 @@ class Moon {
     int y
     int z
     Velocity v = new Velocity()
+    RepeatingPattern xs = new RepeatingPattern()
+    RepeatingPattern ys = new RepeatingPattern()
+    RepeatingPattern zs = new RepeatingPattern()
+    boolean recording
+
+    Moon(x, y, z, recording = true) {
+        this.x = x
+        this.y = y
+        this.z = z
+        this.recording = recording
+        recordMove()
+    }
 
     def applyGravity(Moon moon) {
         v.x += moon.x > x ? 1 : moon.x < x ? -1 : 0
@@ -16,6 +28,19 @@ class Moon {
         x += v.x
         y += v.y
         z += v.z
+        recordMove()
+    }
+
+    def recordMove() {
+        if (recording) {
+            xs.push(x)
+            ys.push(y)
+            zs.push(z)
+        }
+    }
+
+    def isRepeating() {
+        return xs.isRepeating && ys.isRepeating && zs.isRepeating
     }
 
     def potentialEnergy() {

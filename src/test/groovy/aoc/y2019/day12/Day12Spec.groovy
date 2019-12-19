@@ -10,10 +10,10 @@ class Day12Spec extends Specification {
     def "part1 test a"() {
         given:
         def jupiter = new Jupiter([
-                new Moon(x: -1, y: 0, z: 2),
-                new Moon(x: 2, y: -10, z: -7),
-                new Moon(x: 4, y: -8, z: 8),
-                new Moon(x: 3, y: 5, z: -1)
+                new Moon(-1, 0, 2),
+                new Moon(2, -10, -7),
+                new Moon(4, -8, 8),
+                new Moon(3, 5, -1)
         ])
 
         expect:
@@ -23,10 +23,10 @@ class Day12Spec extends Specification {
     def "part1 test b"() {
         given:
         def jupiter = new Jupiter([
-                new Moon(x: -8, y: -10, z: 0),
-                new Moon(x: 5, y: 5, z: 10),
-                new Moon(x: 2, y: -7, z: 3),
-                new Moon(x: 9, y: -8, z: -3)
+                new Moon(-8, -10, 0),
+                new Moon(5, 5, 10),
+                new Moon(2, -7, 3),
+                new Moon(9, -8, -3)
         ])
 
         expect:
@@ -36,10 +36,10 @@ class Day12Spec extends Specification {
     def "part1"() {
         given:
         def jupiter = new Jupiter([
-                new Moon(x:17, y:-12, z:13),
-                new Moon(x:2, y:1, z:1),
-                new Moon(x:-1, y:-17, z:7),
-                new Moon(x:12, y:-14, z:18),
+                new Moon(17, -12, 13),
+                new Moon(2, 1, 1),
+                new Moon(-1, -17, 7),
+                new Moon(12, -14, 18),
         ])
 
         expect:
@@ -49,10 +49,10 @@ class Day12Spec extends Specification {
     def "part2 test a"() {
         given:
         def jupiter = new Jupiter([
-                new Moon(x: -1, y: 0, z: 2),
-                new Moon(x: 2, y: -10, z: -7),
-                new Moon(x: 4, y: -8, z: 8),
-                new Moon(x: 3, y: 5, z: -1)
+                new Moon(-1, 0, 2),
+                new Moon(2, -10, -7),
+                new Moon(4, -8, 8),
+                new Moon(3, 5, -1)
         ])
 
         expect:
@@ -62,10 +62,10 @@ class Day12Spec extends Specification {
     def "part2 test b"() {
         given:
         def jupiter = new Jupiter([
-                new Moon(x: -8, y: -10, z: 0),
-                new Moon(x: 5, y: 5, z: 10),
-                new Moon(x: 2, y: -7, z: 3),
-                new Moon(x: 9, y: -8, z: -3)
+                new Moon(-8, -10, 0),
+                new Moon(5, 5, 10),
+                new Moon(2, -7, 3),
+                new Moon(9, -8, -3)
         ])
 
         expect:
@@ -75,13 +75,13 @@ class Day12Spec extends Specification {
     def "part2"() {
         given:
         def jupiter = new Jupiter([
-                new Moon(x:17, y:-12, z:13),
-                new Moon(x:2, y:1, z:1),
-                new Moon(x:-1, y:-17, z:7),
-                new Moon(x:12, y:-14, z:18),
+                new Moon(17, -12, 13),
+                new Moon(2, 1, 1),
+                new Moon(-1, -17, 7),
+                new Moon(12, -14, 18),
         ])
 
         expect:
-        jupiter.findPreviousStep() == 1
+        jupiter.findPreviousStep() == 314917503970904
     }
 }
