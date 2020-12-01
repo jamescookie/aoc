@@ -1,0 +1,11 @@
+package aoc.y2020.day1
+
+class Day1 {
+    static part1(input) {
+
+    }
+
+    static part2(input) {
+
+    }
+}
