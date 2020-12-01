@@ -1,11 +1,13 @@
-package aoc.y2020.day1
+package aoc.y%YEAR%.day%DAY%
 
-class Day1 {
-    static part1(input) {
-
+class Day%DAY% {
+    static part1(String inputString) {
+        Integer[] input = inputString.tokenize().collect {Integer.parseInt(it)}
+        return null
     }
 
-    static part2(input) {
-
+    static part2(String inputString) {
+        Integer[] input = inputString.tokenize().collect {Integer.parseInt(it)}
+        return null
     }
 }

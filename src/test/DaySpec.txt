@@ -1,15 +1,15 @@
-package aoc.y2019.day1
+package aoc.y%YEAR%.day%DAY%
 
+import aoc.InputReader
 import spock.lang.Specification
 import spock.lang.Unroll
-import aoc.InputReader
 
 @Unroll
-class Day1Spec extends Specification {
+class Day%DAY%Spec extends Specification {
 
     def "part1 warmup tests"() {
         expect:
-        Day1.part1(input) == output
+        Day%DAY%.part1(input) == output
 
         where:
         input  | output
@@ -17,12 +17,12 @@ class Day1Spec extends Specification {
 
     def "part1"() {
         expect:
-        Day1.part1(InputReader.read("y2019/day1")) == ??
+        Day%DAY%.part1(InputReader.read("y%YEAR%/day%DAY%")) == "this will be the answer"
     }
 
     def "part2 warmup tests"() {
         expect:
-        Day1.part2(input) == output
+        Day%DAY%.part2(input) == output
 
         where:
         input  | output
@@ -30,6 +30,6 @@ class Day1Spec extends Specification {
 
     def "part2"() {
         expect:
-        Day1.part2(InputReader.read("y2019/day1")) == ??
+        Day%DAY%.part2(InputReader.read("y%YEAR%/day%DAY%")) == "this will be the answer"
     }
 }
