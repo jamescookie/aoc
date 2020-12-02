@@ -29,4 +29,4 @@ cp src/main/Day.txt src/main/groovy/aoc/y$YEAR/day$DAY/Day${DAY}.groovy
 sed -i '' "s/%DAY%/$DAY/g" src/main/groovy/aoc/y$YEAR/day$DAY/Day${DAY}.groovy
 sed -i '' "s/%YEAR%/$YEAR/g" src/main/groovy/aoc/y$YEAR/day$DAY/Day${DAY}.groovy
 curl -b session=$AOC_SESSION https://adventofcode.com/$YEAR/day/$DAY/input -o src/test/groovy/aoc/y$YEAR/day$DAY/input.txt
-curl -b session=$AOC_SESSION https://adventofcode.com/2020/day/$DAY -o src/main/groovy/aoc/y$YEAR/day$DAY/README.html
+curl -b session=$AOC_SESSION https://adventofcode.com/$YEAR/day/$DAY -o src/main/groovy/aoc/y$YEAR/day$DAY/README.html
