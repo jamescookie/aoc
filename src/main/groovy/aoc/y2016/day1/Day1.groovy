@@ -1,6 +1,6 @@
 package aoc.y2016.day1
 
-import java.awt.Point
+import aoc.Point
 
 class Day1 {
     static def DIRECTION_MAPPINGS = [
@@ -20,7 +20,7 @@ class Day1 {
         def mover = new DirectionMover(currentDirection: "N", current: new Point())
         input.each {mover.move(it)}
 
-        return (Math.abs(mover.current.x) + Math.abs(mover.current.y)).intValue()
+        return (Math.abs(mover.current.x) + Math.abs(mover.current.y))
     }
 
     static part2(String inputString) {
@@ -29,7 +29,7 @@ class Day1 {
         def mover = new DirectionMover(currentDirection: "N", current: new Point(), record: true)
         input.each {mover.move(it)}
 
-        return mover.dupe ? (Math.abs(mover.dupe.x) + Math.abs(mover.dupe.y)).intValue() : (Math.abs(mover.current.x) + Math.abs(mover.current.y)).intValue()
+        return mover.dupe ? (Math.abs(mover.dupe.x) + Math.abs(mover.dupe.y)) : (Math.abs(mover.current.x) + Math.abs(mover.current.y))
     }
 
     static class DirectionMover {
@@ -59,7 +59,7 @@ class Day1 {
                     newX = newX - howFar
                     break;
             }
-            def newPoint = new Point(newX.intValue(), newY.intValue())
+            def newPoint = new Point(newX, newY)
             if (record) {
                 addPoints(current, newPoint)
             }
@@ -69,21 +69,21 @@ class Day1 {
 
         void addPoints(Point p1, Point p2) {
             if (p1.x < p2.x) {
-                for (int i = p1.x.intValue(); i < p2.x.intValue(); i++) {
-                    addPastPoint(new Point(i, p1.y.intValue()))
+                for (int i = p1.x; i < p2.x; i++) {
+                    addPastPoint(new Point(i, p1.y))
                 }
             } else {
-                for (int i = p1.x.intValue(); i > p2.x.intValue(); i--) {
-                    addPastPoint(new Point(i, p1.y.intValue()))
+                for (int i = p1.x; i > p2.x; i--) {
+                    addPastPoint(new Point(i, p1.y))
                 }
             }
             if (p1.y < p2.y) {
-                for (int i = p1.y.intValue(); i < p2.y.intValue(); i++) {
-                    addPastPoint(new Point(p1.x.intValue(), i))
+                for (int i = p1.y; i < p2.y; i++) {
+                    addPastPoint(new Point(p1.x, i))
                 }
             } else {
-                for (int i = p1.y.intValue(); i > p2.y.intValue(); i--) {
-                    addPastPoint(new Point(p1.x.intValue(), i))
+                for (int i = p1.y; i > p2.y; i--) {
+                    addPastPoint(new Point(p1.x, i))
                 }
             }
         }
