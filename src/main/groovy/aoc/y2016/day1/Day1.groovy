@@ -68,24 +68,8 @@ class Day1 {
         }
 
         void addPoints(Point p1, Point p2) {
-            if (p1.x < p2.x) {
-                for (int i = p1.x; i < p2.x; i++) {
-                    addPastPoint(new Point(i, p1.y))
-                }
-            } else {
-                for (int i = p1.x; i > p2.x; i--) {
-                    addPastPoint(new Point(i, p1.y))
-                }
-            }
-            if (p1.y < p2.y) {
-                for (int i = p1.y; i < p2.y; i++) {
-                    addPastPoint(new Point(p1.x, i))
-                }
-            } else {
-                for (int i = p1.y; i > p2.y; i--) {
-                    addPastPoint(new Point(p1.x, i))
-                }
-            }
+            addPastPoint(p1)
+            Point.straightLinePointsBetween(p1, p2).each {addPastPoint(it)}
         }
 
         void addPastPoint(Point p) {

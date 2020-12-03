@@ -51,4 +51,29 @@ class Point {
         }
         return super.equals(obj)
     }
+
+    static List<Point> straightLinePointsBetween(Point p1, Point p2) {
+        List<Point> points = []
+        if (p1.x < p2.x) {
+            for (int i = p1.x; i < p2.x; i++) {
+                points << new Point(i, p1.y)
+            }
+        } else if (p1.x > p2.x) {
+            for (int i = p1.x; i > p2.x; i--) {
+                points << new Point(i, p1.y)
+            }
+        }
+        if (p1.y < p2.y) {
+            for (int i = p1.y; i < p2.y; i++) {
+                points << new Point(p1.x, i)
+            }
+        } else if (p1.y > p2.y) {
+            for (int i = p1.y; i > p2.y; i--) {
+                points << new Point(p1.x, i)
+            }
+        }
+        points.remove(p1)
+        points.remove(p2)
+        return points
+    }
 }
