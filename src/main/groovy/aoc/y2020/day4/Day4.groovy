@@ -4,12 +4,12 @@ package aoc.y2020.day4
 class Day4 {
     static part1(String inputString) {
         String[] input = inputString.split(/\n\n/)
-        return input.collect {new Passport(it.tokenize()).validPart1()}.findAll {it}.size()
+        return input.collect { new Passport(it.tokenize()).validPart1() }.findAll { it }.size()
     }
 
     static part2(String inputString) {
         String[] input = inputString.split(/\n\n/)
-        return input.collect {new Passport(it.tokenize()).validPart2()}.findAll {it}.size()
+        return input.collect { new Passport(it.tokenize()).validPart2() }.findAll { it }.size()
     }
 
     static class Passport {
@@ -37,35 +37,14 @@ class Day4 {
         }
 
         boolean validPart2() {
-            try {
-                return validPart1() &&
-                        between(byr, 1920, 2002) &&
-                        between(iyr, 2010, 2020) &&
-                        between(eyr, 2020, 2030) &&
-                        validHeight(hgt) &&
-                        hcl ==~ /#[0-9a-f]{6}/ &&
-                        ecl in ['amb', 'blu','brn','gry','grn','hzl','oth'] &&
-                        pid ==~ /[0-9]{9}/
-            } catch (e) {
-                return false
-            }
-        }
-
-        static boolean validHeight(String hgt) {
-            def matcher = hgt =~ /(\d+)([cm|in]+)/
-            if (matcher.size() == 1 && matcher[0].size() == 3) {
-                if (matcher[0][2] == 'in') {
-                    return between(matcher[0][1], 59, 76)
-                }
-                if (matcher[0][2] == 'cm') {
-                    return between(matcher[0][1], 150, 193)
-                }
-            }
-            return false
-        }
-
-        static boolean between(String s, int low, int high) {
-            s && Integer.parseInt(s) >= low && Integer.parseInt(s) <= high
+            return validPart1() &&
+                    byr ==~ /19[2-9][0-9]|200[0-2]/ &&
+                    iyr ==~ /20[1][0-9]|2020/ &&
+                    eyr ==~ /20[2][0-9]|2030/ &&
+                    hgt ==~ /59in|6[0-9]in|7[0-6]in|1[5-8][0-9]cm|19[0-3]cm/ &&
+                    hcl ==~ /#[0-9a-f]{6}/ &&
+                    ecl ==~ /(amb|blu|brn|gry|grn|hzl|oth)+/ &&
+                    pid ==~ /[0-9]{9}/
         }
     }
 }
