@@ -13,24 +13,20 @@ class Day8 {
         def result = 0
         Program p
         for (i in 0..<instructions.size()) {
-            instructions.each {it.visited = false}
+            instructions*.reset()
             if (instructions[i].command == "nop") {
-                instructions[i].command = "jmp"
+                instructions[i].tmp = "jmp"
                 p = new Program()
                 p.run(instructions)
                 if (!p.infiniteLoop) {
                     return p.acc
-                } else {
-                    instructions[i].command = "nop"
                 }
             } else if (instructions[i].command == "jmp") {
-                instructions[i].command = "nop"
+                instructions[i].tmp = "nop"
                 p = new Program()
                 p.run(instructions)
                 if (!p.infiniteLoop) {
                     return p.acc
-                } else {
-                    instructions[i].command = "jmp"
                 }
             }
         }
@@ -76,12 +72,22 @@ class Day8 {
     static class Instruction {
         boolean visited = false
         String command
+        String tmp
         int amount
 
         Instruction(String s) {
             def input = s.tokenize()
             command = input[0]
             amount = Integer.parseInt(input[1])
+        }
+
+        String getCommand() {
+            return tmp ? tmp : command
+        }
+
+        void reset() {
+            visited = false
+            tmp = null
         }
     }
 }
