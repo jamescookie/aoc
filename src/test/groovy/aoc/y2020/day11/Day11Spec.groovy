@@ -22,13 +22,13 @@ L.LLLLL.LL"""
         Day11.part1(input) == output
 
         where:
-        input  | output
-        t1 | 37
+        input | output
+        t1    | 37
     }
 
     def "part1"() {
         expect:
-        Day11.part1(InputReader.read("y2020/day11")) == 1
+        Day11.part1(InputReader.read("y2020/day11")) == 2126
     }
 
     def "part2 warmup tests"() {
@@ -36,12 +36,12 @@ L.LLLLL.LL"""
         Day11.part2(input) == output
 
         where:
-        input  | output
-        t1 | 37
+        input | output
+        t1    | 26
     }
 
     def "part2"() {
         expect:
-        Day11.part2(InputReader.read("y2020/day11")) == 1
+        Day11.part2(InputReader.read("y2020/day11")) == 1914
     }
 }
