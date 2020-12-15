@@ -26,18 +26,11 @@ class Day15 {
         for (i in 0..<inputSize) {
             spoken.put(input[i], new Pair().push(i + 1))
         }
-        int current
         int next = input[-1]
         Pair p
         for (i in inputSize..<target) {
-            current = next
-            next = 0
-            p = spoken.get(current)
-            if (p) {
-                if (p.i2) {
-                    next = i - p.i2
-                }
-            }
+            p = spoken.get(next)
+            next = p.i2 ? i - p.i2 : 0
             spoken.put(next, spoken.getOrDefault(next, new Pair()).push(i + 1))
         }
         return next
