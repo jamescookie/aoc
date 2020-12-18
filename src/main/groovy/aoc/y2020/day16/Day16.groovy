@@ -58,6 +58,7 @@ class Day16 {
         String name
         Range upper
         Range lower
+
         Rule(String s) {
             def matcher = s =~ /(.*?): (\d+)-(\d+) or (\d+)-(\d+)/
             name = matcher[0][1]
@@ -74,40 +75,20 @@ class Day16 {
         String[] input = inputString.tokenize('\n')
         List<Rule> rules = []
         def otherTickets = []
-        Set validTickets = []
         def myTicket = parse(input, rules, otherTickets)
 
-        for (i in 0..<otherTickets.size()) {
-            def ticket = otherTickets[i]
-            for (j in 0..<ticket.size()) {
-                def value = ticket[j]
-                def valid = false
-                for (k in 0..<rules.size()) {
-                    if (rules[k].contains(value)) {
-                        valid = true
-                        break
-                    }
-                }
-                if (valid) {
-                    validTickets << ticket
-                } else {
-                    break
-                }
-            }
-        }
-
-        for (i in 0..<validTickets[0].size()) {
+        for (i in 0..<otherTickets[0].size()) {
             for (j in 0..<rules.size()) {
                 def count = 0
-                for (k in 0..<validTickets.size()) {
-                    if (rules[j].contains(validTickets[k][i])) {
+                for (k in 0..<otherTickets.size()) {
+                    if (rules[j].contains(otherTickets[k][i])) {
                         count++
                     }
                 }
                 rules[j].tmp = count
             }
             def max = rules*.tmp.max()
-            rules.findAll {it.tmp == max}.each {it.pos << i}
+            rules.findAll { it.tmp == max }.each { it.pos << i }
         }
 
         def finished = false
@@ -121,11 +102,11 @@ class Day16 {
                     }
                 }
             }
-            finished = rules.every {it.pos.size() == 1}
+            finished = rules.every { it.pos.size() == 1 }
         }
 
         long result = 1
-        rules.findAll {it.name.startsWith(what)}.collect {it.pos[0]}.collect {myTicket[it]}.each {result*=it}
+        rules.findAll { it.name.startsWith(what) }.collect { myTicket[it.pos[0]] }.each { result *= it }
         return result
     }
 }
