@@ -12,7 +12,7 @@ if [[ "${AOC_SESSION}" == "" ]] ; then
     exit 0
 fi
 
-YEAR=2020
+YEAR=2021
 DAY=$1
 
 echo "Downloading $YEAR day $DAY"
