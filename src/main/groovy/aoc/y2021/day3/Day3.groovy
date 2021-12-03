@@ -23,11 +23,10 @@ class Day3 {
         def half = input.size() / 2
         Integer result = null
         while (denominator > 0) {
-            def match = matchingBit(input, denominator).size() > half
             if (result) {
                 result = result << 1
             }
-            if (match) {
+            if (matchingBit(input, denominator).size() > half) {
                 result = result ? result + 1 : 1
             }
             denominator = denominator >> 1
