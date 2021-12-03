@@ -14,10 +14,9 @@ class Day3 {
     static part2(String inputString) {
         def strings = inputString.tokenize()
         Integer[] input = strings.collect { Integer.parseInt(it, 2) }
-        int size = strings.get(0).size()
-
-        int oxygen = findOxygen(input, Math.pow(2.0, size - 1).intValue())
-        int co2 = findCO2(input, Math.pow(2.0, size - 1).intValue())
+        def start = Math.pow(2.0, strings.get(0).size() - 1).intValue()
+        int oxygen = findResult(input, start) { a, b -> a >= b }
+        int co2 = findResult(input, start) { a, b -> a < b }
         return oxygen * co2
     }
 
@@ -31,25 +30,11 @@ class Day3 {
         Integer.parseInt(result, 2)
     }
 
-    static int findOxygen(Integer[] input, int denominator) {
+    static int findResult(Integer[] input, int denominator, comparator) {
         while (input.size() != 1) {
             def ones = matchingBit(input, denominator)
             def zeros = input - ones
-            if (ones.size() >= zeros.size()) {
-                input = ones
-            } else {
-                input = zeros
-            }
-            denominator = denominator >> 1
-        }
-        input[0]
-    }
-
-    static int findCO2(Integer[] input, int denominator) {
-        while (input.size() != 1) {
-            def ones = matchingBit(input, denominator)
-            def zeros = input - ones
-            if (ones.size() < zeros.size()) {
+            if (comparator(ones.size(), zeros.size())) {
                 input = ones
             } else {
                 input = zeros
