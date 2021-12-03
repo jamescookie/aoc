@@ -22,12 +22,18 @@ class Day3 {
 
     static int findGamma(Integer[] input, int denominator) {
         def half = input.size() / 2
-        String result = ""
+        Integer result = null
         while (denominator > 0) {
-            result += matchingBit(input, denominator).size() > half ? "1" : "0"
+            def match = matchingBit(input, denominator).size() > half
+            if (result) {
+                result = result << 1
+            }
+            if (match) {
+                result = result ? result + 1 : 1
+            }
             denominator = denominator >> 1
         }
-        Integer.parseInt(result, 2)
+        result
     }
 
     static int findResult(Integer[] input, int denominator, comparator) {
