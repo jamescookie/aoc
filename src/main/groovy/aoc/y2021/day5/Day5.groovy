@@ -11,7 +11,7 @@ class Day5 {
 
         def x = lines.collect {l1 ->
             lines.collect {l2 ->
-                if (l1 == l2) {
+                if (l1 == l2 || !l1.intersectsLine(l2)) {
                     []
                 } else {
                     l1.points.intersect(l2.points)
