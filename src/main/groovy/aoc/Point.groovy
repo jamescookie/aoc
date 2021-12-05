@@ -1,6 +1,6 @@
 package aoc
 
-class Point {
+class Point implements Comparable<Point> {
     public int x
     public int y
 
@@ -15,6 +15,10 @@ class Point {
     Point(int x, int y) {
         this.x = x
         this.y = y
+    }
+
+    Point(String s) {
+        (x, y) = s.tokenize(',').collect { Integer.parseInt(it) }
     }
 
     Point getLocation() {
@@ -44,12 +48,22 @@ class Point {
         this.y += dy
     }
 
+    @Override
+    int hashCode() {
+        return x.hashCode() * y.hashCode()
+    }
+
+    @Override
     boolean equals(Object obj) {
         if (obj instanceof Point) {
             Point pt = (Point) obj
             return (x == pt.x) && (y == pt.y)
         }
         return super.equals(obj)
+    }
+
+    String toString() {
+        x + ',' + y
     }
 
     static List<Point> straightLinePointsBetween(Point p1, Point p2) {
@@ -75,5 +89,12 @@ class Point {
         points.remove(p1)
         points.remove(p2)
         return points
+    }
+
+    @Override
+    int compareTo(Point p2) {
+        return Comparator.comparingInt({p->p.x})
+                .thenComparingInt({p->p.y})
+                .compare(this, p2)
     }
 }
