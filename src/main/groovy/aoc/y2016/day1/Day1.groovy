@@ -69,7 +69,7 @@ class Day1 {
 
         void addPoints(Point p1, Point p2) {
             addPastPoint(p1)
-            Point.straightLinePointsBetween(p1, p2).each {addPastPoint(it)}
+            Point.pointsBetween(p1, p2).each {addPastPoint(it)}
         }
 
         void addPastPoint(Point p) {

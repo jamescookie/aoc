@@ -8,28 +8,26 @@ class Day5 {
         String[] input = inputString.tokenize('\n')
         def lines = input.collect { createLine(it) }
         lines = lines.findAll { it.p1.x == it.p2.x || it.p1.y == it.p2.y }
-
-        def x = lines.collect {l1 ->
-            lines.collect {l2 ->
-                if (l1 == l2 || !l1.intersectsLine(l2)) {
-                    []
-                } else {
-                    l1.points.intersect(l2.points)
-                }
-            }
-        }
-
-        return x.flatten().toSet().size()
-    }
-
-    protected static Line createLine(String input) {
-        def tokenize = input.tokenize(' -> ')
-        new Line(new Point(tokenize[0]), new Point(tokenize[1]))
+        return findOverlappingPoints(lines)
     }
 
     static part2(String inputString) {
-        Integer[] input = inputString.tokenize().collect { Integer.parseInt(it) }
-        return null
+        String[] input = inputString.tokenize('\n')
+        def lines = input.collect { createLine(it) }
+        return findOverlappingPoints(lines)
+    }
+
+    protected static int findOverlappingPoints(List<Line> lines) {
+        return lines.collect { l1 ->
+            lines.collect { l2 ->
+                (l1 == l2 || !l1.intersectsLine(l2)) ? [] : l1.points.intersect(l2.points)
+            }
+        }.flatten().toSet().size()
+    }
+
+    private static Line createLine(String input) {
+        def tokenize = input.tokenize(' -> ')
+        new Line(new Point(tokenize[0]), new Point(tokenize[1]))
     }
 
 

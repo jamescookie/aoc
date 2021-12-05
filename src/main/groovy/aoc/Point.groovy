@@ -66,24 +66,50 @@ class Point implements Comparable<Point> {
         x + ',' + y
     }
 
-    static List<Point> straightLinePointsBetween(Point p1, Point p2) {
-        List<Point> points = []
-        if (p1.x < p2.x) {
-            for (int i = p1.x; i < p2.x; i++) {
-                points << new Point(i, p1.y)
+    static Set<Point> pointsBetween(Point p1, Point p2) {
+        int x1 = p1.x
+        int y1 = p1.y
+        int x2 = p2.x
+        int y2 = p2.y
+        Set<Point> points = []
+        // delta of exact value and rounded value of the dependent variable
+        int d = 0;
+
+        int dx = Math.abs(x2 - x1);
+        int dy = Math.abs(y2 - y1);
+
+        int dx2 = 2 * dx; // slope scaling factors to
+        int dy2 = 2 * dy; // avoid floating point
+
+        int ix = x1 < x2 ? 1 : -1; // increment direction
+        int iy = y1 < y2 ? 1 : -1;
+
+        int x = x1;
+        int y = y1;
+
+        if (dx >= dy) {
+            while (true) {
+                points << new Point(x, y);
+                if (x == x2)
+                    break;
+                x += ix;
+                d += dy2;
+                if (d > dx) {
+                    y += iy;
+                    d -= dx2;
+                }
             }
-        } else if (p1.x > p2.x) {
-            for (int i = p1.x; i > p2.x; i--) {
-                points << new Point(i, p1.y)
-            }
-        }
-        if (p1.y < p2.y) {
-            for (int i = p1.y; i < p2.y; i++) {
-                points << new Point(p1.x, i)
-            }
-        } else if (p1.y > p2.y) {
-            for (int i = p1.y; i > p2.y; i--) {
-                points << new Point(p1.x, i)
+        } else {
+            while (true) {
+                points << new Point(x, y);
+                if (y == y2)
+                    break;
+                y += iy;
+                d += dx2;
+                if (d > dy) {
+                    x += ix;
+                    d -= dy2;
+                }
             }
         }
         points.remove(p1)

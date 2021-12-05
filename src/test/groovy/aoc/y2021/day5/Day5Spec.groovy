@@ -37,11 +37,11 @@ class Day5Spec extends Specification {
 
         where:
         input  | output
-        t1     | 0
+        t1     | 12
     }
 
     def "part2"() {
         expect:
-        Day5.part2(InputReader.read("y2021/day5")) == 0
+        Day5.part2(InputReader.read("y2021/day5")) == 19676
     }
 }
