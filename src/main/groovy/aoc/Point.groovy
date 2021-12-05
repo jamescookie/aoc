@@ -119,8 +119,8 @@ class Point implements Comparable<Point> {
 
     @Override
     int compareTo(Point p2) {
-        return Comparator.comparingInt({p->p.x})
-                .thenComparingInt({p->p.y})
+        return Comparator.comparingInt({ p -> p.x })
+                .thenComparingInt({ p -> p.y })
                 .compare(this, p2)
     }
 }

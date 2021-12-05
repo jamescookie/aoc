@@ -29,6 +29,4 @@ class Day5 {
         def tokenize = input.tokenize(' -> ')
         new Line(new Point(tokenize[0]), new Point(tokenize[1]))
     }
-
-
 }
