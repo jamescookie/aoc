@@ -19,24 +19,16 @@ class Day6Spec extends Specification {
         t1    | 3    | 7
         t1    | 18   | 26
         t1    | 80   | 5934
+        t1    | 256  | 26984457539
     }
 
     def "part1"() {
         expect:
-        Day6.part1(InputReader.read("y2021/day6"), 80) == 0
-    }
-
-    def "part2 warmup tests"() {
-        expect:
-        Day6.part2(input) == output
-
-        where:
-        input | output
-        t1    | 0
+        Day6.part1(InputReader.read("y2021/day6"), 80) == 362639
     }
 
     def "part2"() {
         expect:
-        Day6.part2(InputReader.read("y2021/day6")) == 0
+        Day6.part1(InputReader.read("y2021/day6"), 256) == 1639854996917
     }
 }
