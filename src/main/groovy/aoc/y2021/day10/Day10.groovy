@@ -13,6 +13,7 @@ class Day10 {
             ('{' as char): ('}' as char),
             ('<' as char): ('>' as char)
     ]
+    static Set<Character> openers = matches.keySet()
 
     static part1(String inputString) {
         String[] input = inputString.trim().tokenize().collect { it }
@@ -30,7 +31,6 @@ class Day10 {
 
     static long finish(List<Character> input) {
         List<Character> opened = []
-        Set<Character> openers = matches.keySet()
 
         for (i in 0..<input.size()) {
             Character current = input[i]
@@ -45,7 +45,6 @@ class Day10 {
 
     static int findError(List<Character> input) {
         List<Character> opened = []
-        Set<Character> openers = matches.keySet()
 
         for (i in 0..<input.size()) {
             Character current = input[i]
