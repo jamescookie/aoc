@@ -66,6 +66,15 @@ class Point implements Comparable<Point> {
         x + ',' + y
     }
 
+    static Set<Point> neighbours(input, Point p) {
+        Set<Point> points = []
+        if (p.y - 1 >= 0) points << new Point(p.x, p.y - 1)
+        if (p.y + 1 < input[p.x].size()) points << new Point(p.x, p.y + 1)
+        if (p.x - 1 >= 0) points << new Point(p.x - 1, p.y)
+        if (p.x + 1 < input.size()) points << new Point(p.x + 1, p.y)
+        return points
+    }
+
     static Set<Point> pointsBetween(Point p1, Point p2) {
         int x1 = p1.x
         int y1 = p1.y

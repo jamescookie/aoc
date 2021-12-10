@@ -1,29 +1,17 @@
 package aoc.y2021.day9
 
+import aoc.Point
+
 class Day9 {
     static part1(String inputString) {
         Integer[][] input = inputString.tokenize().collect { row -> (row as List).collect { it as int } }
         int answer = 0
 
-        for (i in 0..<input.size()) {
-            Integer[] row = input[i]
-            for (j in 0..<row.size()) {
-                boolean low = true
-                int square = row[j]
-                if (j - 1 >= 0) {
-                    low = low && square < row[j - 1]
-                }
-                if (j + 1 < row.size()) {
-                    low = low && square < row[j + 1]
-                }
-                if (i - 1 >= 0) {
-                    low = low && square < input[i - 1][j]
-                }
-                if (i + 1 < input.size()) {
-                    low = low && square < input[i + 1][j]
-                }
-                if (low) {
-                    answer += square + 1
+        for (x in 0..<input.size()) {
+            for (y in 0..<input[x].size()) {
+                int current = input[x][y]
+                if (Point.neighbours(input, new Point(x, y)).every { p -> current < input[p.x][p.y] }) {
+                    answer += current + 1
                 }
             }
         }
@@ -34,36 +22,23 @@ class Day9 {
         Integer[][] input = inputString.tokenize().collect { row -> (row as List).collect { it as int } }
         def answers = []
 
-        for (i in 0..<input.size()) {
-            Integer[] row = input[i]
-            for (j in 0..<row.size()) {
-                if (input[i][j] != 9) {
-                    answers << findBasin(input, i, j)
+        for (x in 0..<input.size()) {
+            for (y in 0..<input[x].size()) {
+                if (input[x][y] != 9) {
+                    answers << findBasin(input, x, y)
                 }
             }
         }
 
-        answers = answers.sort()[-3..-1]
-        return answers[0] * answers[1] * answers[2]
+        return answers.sort()[-3..-1].inject { a, b -> a * b }
     }
 
-    static int findBasin(Integer[][] input, int i, int j) {
+    static int findBasin(Integer[][] input, int x, int y) {
         int answer = 1
-        input[i][j] = 9
-
-        if (j - 1 >= 0 && input[i][j - 1] != 9) {
-            answer += findBasin(input, i, j - 1)
+        input[x][y] = 9
+        Point.neighbours(input, new Point(x, y)).each { p ->
+            if (input[p.x][p.y] != 9) answer += findBasin(input, p.x, p.y)
         }
-        if (j + 1 < input[i].size() && input[i][j + 1] != 9) {
-            answer += findBasin(input, i, j + 1)
-        }
-        if (i - 1 >= 0 && input[i - 1][j] != 9) {
-            answer += findBasin(input, i - 1, j)
-        }
-        if (i + 1 < input.size() && input[i + 1][j] != 9) {
-            answer += findBasin(input, i + 1, j)
-        }
-
         return answer
     }
 }
