@@ -7,19 +7,7 @@ class Day11 {
         Integer[][] input = inputString.tokenize().collect { row -> row.collect { it as int } }
         int answer = 0
         for (step in 0..<steps) {
-            for (x in 0..<input.size()) {
-                for (y in 0..<input[0].size()) {
-                    input[x][y] += 1
-                }
-            }
-            def flashed = []
-            for (x in 0..<input.size()) {
-                for (y in 0..<input[0].size()) {
-                    checkFlash(input, x, y, flashed)
-                }
-            }
-            flashed.each { p -> input[p.x][p.y] = 0 }
-            answer += flashed.size()
+            answer += findFlashers(input).size()
         }
         return answer
     }
@@ -28,23 +16,23 @@ class Day11 {
         Integer[][] input = inputString.tokenize().collect { row -> row.collect { it as int } }
         int step = 0
         while (true) {
-            for (x in 0..<input.size()) {
-                for (y in 0..<input[0].size()) {
-                    input[x][y] += 1
-                }
-            }
-            def flashed = []
-            for (x in 0..<input.size()) {
-                for (y in 0..<input[0].size()) {
-                    checkFlash(input, x, y, flashed)
-                }
-            }
-            flashed.each { p -> input[p.x][p.y] = 0 }
             step++
-            if (flashed.size() == 100) {
+            if (findFlashers(input).size() == 100) {
                 return step
             }
         }
+    }
+
+    protected static List findFlashers(Integer[][] input) {
+        def flashed = []
+        for (x in 0..<input.size()) {
+            for (y in 0..<input[0].size()) {
+                input[x][y] += 1
+                checkFlash(input, x, y, flashed)
+            }
+        }
+        flashed.each { p -> input[p.x][p.y] = 0 }
+        flashed
     }
 
     protected static List<Point> checkFlash(Integer[][] input, int x, int y, List<Point> flashed) {
