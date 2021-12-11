@@ -15,19 +15,11 @@ class Day11 {
             def flashed = []
             for (x in 0..<input.size()) {
                 for (y in 0..<input[0].size()) {
-                    if (input[x][y] > 9) {
-                        flash(input, x, y, flashed)
-                    }
+                    checkFlash(input, x, y, flashed)
                 }
             }
-            for (x in 0..<input.size()) {
-                for (y in 0..<input[0].size()) {
-                    if (input[x][y] > 9) {
-                        input[x][y] = 0
-                        answer++
-                    }
-                }
-            }
+            flashed.each { p -> input[p.x][p.y] = 0 }
+            answer += flashed.size()
         }
         return answer
     }
@@ -36,7 +28,6 @@ class Day11 {
         Integer[][] input = inputString.tokenize().collect { row -> row.collect { it as int } }
         int step = 0
         while (true) {
-            int answer = 0
             for (x in 0..<input.size()) {
                 for (y in 0..<input[0].size()) {
                     input[x][y] += 1
@@ -45,36 +36,25 @@ class Day11 {
             def flashed = []
             for (x in 0..<input.size()) {
                 for (y in 0..<input[0].size()) {
-                    if (input[x][y] > 9) {
-                        flash(input, x, y, flashed)
-                    }
+                    checkFlash(input, x, y, flashed)
                 }
             }
-            for (x in 0..<input.size()) {
-                for (y in 0..<input[0].size()) {
-                    if (input[x][y] > 9) {
-                        input[x][y] = 0
-                        answer++
-                    }
-                }
-            }
+            flashed.each { p -> input[p.x][p.y] = 0 }
             step++
-            if (answer == 100) {
+            if (flashed.size() == 100) {
                 return step
             }
         }
     }
 
-
-    protected static List<Point> flash(Integer[][] input, int x, int y, List<Point> flashed) {
+    protected static List<Point> checkFlash(Integer[][] input, int x, int y, List<Point> flashed) {
         def point = new Point(x, y)
-        if (flashed.contains(point)) return flashed
-        flashed << point
-        def neighbours = Point.neighboursWithDiagonals(input, point)
-        neighbours.each { p ->
-            input[p.x][p.y] += 1
-            if (input[p.x][p.y] > 9) {
-                flash(input, p.x, p.y, flashed)
+        if (input[x][y] > 9) {
+            if (flashed.contains(point)) return flashed
+            flashed << point
+            Point.neighboursWithDiagonals(input, point).each { p ->
+                input[p.x][p.y] += 1
+                checkFlash(input, p.x, p.y, flashed)
             }
         }
         return flashed
