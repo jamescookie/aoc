@@ -31,19 +31,15 @@ class Day12 {
         String[] input = inputString.tokenize()
         Set<Cave> caves = []
         input.each { s ->
-            def ab = s.tokenize('-')
-            Cave a = new Cave(ab[0])
-            Cave b = new Cave(ab[1])
-            if (!caves.contains(a)) {
-                caves << a
+            List<Cave> twoNew = s.tokenize('-').collect {name->
+                Cave c = new Cave(name)
+                if (!caves.contains(c)) {
+                    caves << c
+                }
+                caves.find { it.name == name }
             }
-            if (!caves.contains(b)) {
-                caves << b
-            }
-            a = caves.find { it.name == ab[0] }
-            b = caves.find { it.name == ab[1] }
-            a.neighbours << b
-            b.neighbours << a
+            twoNew[0].neighbours << twoNew[1]
+            twoNew[1].neighbours << twoNew[0]
         }
         caves
     }
