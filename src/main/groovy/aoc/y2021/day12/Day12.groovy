@@ -31,17 +31,14 @@ class Day12 {
         String[] input = inputString.tokenize()
         Set<Cave> caves = []
         input.each { s ->
-            List<Cave> twoNew = s.tokenize('-').collect {name->
-                Cave c = new Cave(name)
-                if (!caves.contains(c)) {
-                    caves << c
-                }
-                caves.find { it.name == name }
+            List<Cave> twoNew = s.tokenize('-').collect {name ->
+                caves.find { it.name == name } ?: new Cave(name)
             }
+            caves.addAll(twoNew)
             twoNew[0].neighbours << twoNew[1]
             twoNew[1].neighbours << twoNew[0]
         }
-        caves
+        return caves
     }
 
     static findRoute(Cave current, List<Cave> soFar, routes, Closure acceptable) {
