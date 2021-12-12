@@ -7,8 +7,8 @@ class Day12 {
     static part1(String inputString) {
         Set<Cave> caves = findCaves(inputString)
         def routes = []
-        findRoute(caves.find { it.name == START }, [], routes) { Cave neighbour, List<Cave> soFar ->
-            neighbour.big || !soFar.contains(neighbour)
+        findRoute(caves.find { it.name == START }, [], routes) { Cave cave, List<Cave> soFar ->
+            cave.big || !soFar.contains(cave)
         }
         return routes.size()
     }
@@ -16,13 +16,12 @@ class Day12 {
     static part2(String inputString) {
         Set<Cave> caves = findCaves(inputString)
         def routes = []
-        findRoute(caves.find { it.name == START }, [], routes) { Cave neighbour, List<Cave> soFar ->
-            def visitedLittle = soFar.findAll { !it.big && it.name != START }.groupBy { it.name }
-            if (visitedLittle.any { it.value.size() > 1 }) {
-                return neighbour.big || !soFar.contains(neighbour)
-            } else {
-                return neighbour.name != START
-            }
+        findRoute(caves.find { it.name == START }, [], routes) { Cave cave, List<Cave> soFar ->
+            boolean alreadyBeenToSmallTwice = soFar
+                    .findAll { !it.big }
+                    .groupBy { it.name }
+                    .any { it.value.size() > 1 }
+            return alreadyBeenToSmallTwice ? cave.big || !soFar.contains(cave) : cave.name != START
         }
         return routes.size()
     }
@@ -31,7 +30,7 @@ class Day12 {
         String[] input = inputString.tokenize()
         Set<Cave> caves = []
         input.each { s ->
-            List<Cave> twoNew = s.tokenize('-').collect {name ->
+            List<Cave> twoNew = s.tokenize('-').collect { name ->
                 caves.find { it.name == name } ?: new Cave(name)
             }
             caves.addAll(twoNew)
