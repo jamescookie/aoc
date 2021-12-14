@@ -33,11 +33,11 @@ CN -> C"""
         where:
         input | step | output
         t1    | 1    | 1
-//        t1    | 2    | 5
-//        t1    | 3    | 7
-//        t1    | 4    | 18
-//        t1    | 5    | 33
-//        t1    | 10   | 1588
+        t1    | 2    | 5
+        t1    | 3    | 7
+        t1    | 4    | 18
+        t1    | 5    | 33
+        t1    | 10   | 1588
     }
 
     def "part1"() {
@@ -57,6 +57,6 @@ CN -> C"""
 
     def "part2"() {
         expect:
-        Day14.part2(InputReader.read("y2021/day14"), 40) == 0
+        Day14.part2(InputReader.read("y2021/day14"), 40) == 2516901104210
     }
 }
