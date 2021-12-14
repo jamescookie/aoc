@@ -19,6 +19,7 @@ class Day13 {
             points = fold(instructions[i], points)
         }
 
+        // also see aoc.y2019.day11.Painter
         for (int j = 0; j < (points*.y).max() + 1; j++) {
             for (int i = 0; i < (points*.x).max() + 1; i++) {
                 if (points.contains(new Point(i, j))) {
