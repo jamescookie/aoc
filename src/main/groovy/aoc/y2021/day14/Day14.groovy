@@ -27,18 +27,16 @@ class Day14 {
     }
 
     static part2(String inputString, int steps) {
-        Map<String, Long> allChars = (new HashSet<>(inputString as List) - ['-', '>', ' ', '\n']).collectEntries { [(it), 0L] }
         String[] input = inputString.split('\n\n')
-        List<Character> start = input[0] as List
+        String startingString = input[0]
         Map<String, List<String>> instructions = input[1].split('\n').collectEntries {
             def split = it.split(' -> ');
             [(split[0]): [split[0][0] + split[1], split[1] + split[0][1]]]
         }
-        List<String> initial = []
         Map<String, Long> result = [:]
-        for (int i = 0; i < start.size() - 1; i++) {
-            String pair = "${start[i]}${start[i + 1]}"
-            result.put(pair, result.getOrDefault(pair, 0) + 1)
+        for (int i = 0; i < startingString.size() - 1; i++) {
+            String pair = "${startingString[i]}${startingString[i + 1]}"
+            result.put(pair, result.getOrDefault(pair, 0L) + 1)
         }
 
         for (step in 0..<steps) {
@@ -50,24 +48,14 @@ class Day14 {
             }
             result = newResult
         }
+
+        Map<String, Long> allChars = [(startingString[-1]) : 1L]
         result.each {
-            allChars.put(it.key[0], allChars.get(it.key[0]) + it.value)
+            allChars.put(it.key[0], allChars.getOrDefault(it.key[0], 0) + it.value)
         }
-        allChars.put(input[0][-1], allChars.get(input[0][-1]) + 1)
 
         Long biggest = allChars.values().max()
         Long smallest = allChars.values().min()
         return biggest - smallest
     }
-
-    static void findPairs(List<String> pairs, int steps, Map<String, Long> result, Map<String, List<String>> instructions) {
-        for (String pair in pairs) {
-            if (steps == 0) {
-                result.put(pair, result.getOrDefault(pair, 0) + 1)
-            } else {
-                findPairs(instructions.get(pair), (steps - 1), result, instructions)
-            }
-        }
-    }
-
 }
