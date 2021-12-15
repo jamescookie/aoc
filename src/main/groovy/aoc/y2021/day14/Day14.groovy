@@ -54,8 +54,7 @@ class Day14 {
             allChars.put(it.key[0], allChars.getOrDefault(it.key[0], 0) + it.value)
         }
 
-        Long biggest = allChars.values().max()
-        Long smallest = allChars.values().min()
-        return biggest - smallest
+        def values = allChars.values()
+        return values.max() - values.min()
     }
 }
