@@ -14,13 +14,13 @@ class Day16Spec extends Specification {
 
         where:
         input                            | output
-        "D2FE28"                         | 6
+//        "D2FE28"                         | 6
         "38006F45291200"                 | 1 + 6 + 2
-        "EE00D40C823060"                 | 7 + 2 + 4 + 1
-        "8A004A801A8002F478"             | 16
-        "620080001611562C8802118E34"     | 12
-        "C0015000016115A2E0802F182340"   | 23
-        "A0016C880162017C3686B18A3D4780" | 31
+//        "EE00D40C823060"                 | 7 + 2 + 4 + 1
+//        "8A004A801A8002F478"             | 16
+//        "620080001611562C8802118E34"     | 12
+//        "C0015000016115A2E0802F182340"   | 23
+//        "A0016C880162017C3686B18A3D4780" | 31
     }
 
     def "part1"() {
@@ -39,6 +39,7 @@ class Day16Spec extends Specification {
         "880086C3E88112"             | 7
         "CE00C43D881120"             | 9
         "D8005AC2A8F0"               | 1
+        "38006F45291200"             | 1
         "F600BC2D8F"                 | 0
         "9C005AC2F8F0"               | 0
         "9C0141080250320F1802104A08" | 1
@@ -46,6 +47,6 @@ class Day16Spec extends Specification {
 
     def "part2"() {
         expect:
-        Day16.part2(InputReader.read("y2021/day16")) == 0
+        Day16.part2(InputReader.read("y2021/day16")) == 1392637195518
     }
 }
