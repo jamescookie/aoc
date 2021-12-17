@@ -28,11 +28,11 @@ class Day17Spec extends Specification {
 
         where:
         input  | output
-        t1     | 0
+        t1     | 112
     }
 
     def "part2"() {
         expect:
-        Day17.part2(InputReader.read("y2021/day17")) == 0
+        Day17.part2(InputReader.read("y2021/day17")) == 3344
     }
 }
