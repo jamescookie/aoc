@@ -26,7 +26,7 @@ class Day20Spec extends Specification {
 
     def "part1"() {
         expect:
-        Day20.part1(InputReader.read("y2021/day20")) == 5469
+        Day20.part1(InputReader.read("y2021/day20")) == 5400
     }
 
     def "part2 warmup tests"() {
@@ -35,7 +35,7 @@ class Day20Spec extends Specification {
 
         where:
         input  | output
-        t1     | 0
+        t1     | 3351
     }
 
     def "part2"() {
