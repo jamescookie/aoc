@@ -2,26 +2,20 @@ package aoc.y2021.day20
 
 class Day20 {
     static part1(String inputString) {
-        String[] input = inputString.split('\n\n')
-        String algorithm = input[0].replaceAll(/\./, '0').replaceAll('#', '1')
-        List<List<Integer>> image = input[1].tokenize().collect { row -> (row as List).collect { it == '#' ? 1 : 0 } }
-
-        int fill = 0
-        for (i in 0..<2) {
-            image = enhance(image, algorithm, fill)
-            fill = algorithm[fill == 0 ? 0 : 511] as int
-        }
-
-        return image.flatten().findAll { it }.size()
+        return enhanceImage(inputString, 2)
     }
 
     static part2(String inputString) {
+        return enhanceImage(inputString, 50)
+    }
+
+    protected static int enhanceImage(String inputString, int times) {
         String[] input = inputString.split('\n\n')
         String algorithm = input[0].replaceAll(/\./, '0').replaceAll('#', '1')
         List<List<Integer>> image = input[1].tokenize().collect { row -> (row as List).collect { it == '#' ? 1 : 0 } }
 
         int fill = 0
-        for (i in 0..<50) {
+        for (i in 0..<times) {
             image = enhance(image, algorithm, fill)
             fill = algorithm[fill == 0 ? 0 : 511] as int
         }
