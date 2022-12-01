@@ -30,7 +30,7 @@ Player 2 starting position: 8
 
         where:
         input  | output
-        t1     | 0
+        t1     | 444356092776315
     }
 
     def "part2"() {
