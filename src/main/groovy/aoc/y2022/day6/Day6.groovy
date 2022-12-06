@@ -15,9 +15,9 @@ class Day6 {
         for (i in 0..<inputString.length()) {
             count++
             if (packet.size() == packetSize) {
-                packet.remove(packetSize - 1)
+                packet.pop()
             }
-            packet.push(inputString[i])
+            packet << inputString[i]
             if (packet.size() == packetSize) {
                 if (allDifferent(packet)) {
                     break
