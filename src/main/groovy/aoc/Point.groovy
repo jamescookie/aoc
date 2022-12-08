@@ -84,7 +84,30 @@ class Point implements Comparable<Point> {
         return points
     }
 
-    static Set<Point> pointsBetween(Point p1, Point p2) {
+    static Set<Point> pointsBetweenExcludingEnds(Point p1, Point p2) {
+        def between = pointsBetween(p1, p2)
+        between.remove(p1)
+        between.remove(p2)
+        return between
+    }
+
+    static Set<Point> pointsBetweenIncludingFirst(Point p1, Point p2) {
+        def between = pointsBetween(p1, p2)
+        between.remove(p2)
+        return between
+    }
+
+    static Set<Point> pointsBetweenIncludingLast(Point p1, Point p2) {
+        def between = pointsBetween(p1, p2)
+        between.remove(p1)
+        return between
+    }
+
+    static Set<Point> pointsBetweenIncludingEnds(Point p1, Point p2) {
+        return pointsBetween(p1, p2)
+    }
+
+    private static Set<Point> pointsBetween(Point p1, Point p2) {
         int x1 = p1.x
         int y1 = p1.y
         int x2 = p2.x
@@ -130,8 +153,6 @@ class Point implements Comparable<Point> {
                 }
             }
         }
-        points.remove(p1)
-        points.remove(p2)
         return points
     }
 

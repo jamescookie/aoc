@@ -5,12 +5,12 @@ import java.awt.geom.Line2D
 class Line {
     Point p1
     Point p2
-    List<Point> points
+    Collection<Point> points
 
     Line(Point p1, Point p2) {
         this.p1 = p1
         this.p2 = p2
-        this.points = [p1] + Point.pointsBetween(p1, p2) + [p2]
+        this.points = Point.pointsBetweenIncludingEnds(p1, p2)
     }
 
     boolean intersectsLine(Line l2) {

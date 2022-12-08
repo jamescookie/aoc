@@ -4,25 +4,18 @@ import aoc.Point
 
 class Day8 {
     static part1(String inputString) {
-        Integer[][] input = inputString.tokenize().collect { row->row.collect {Integer.parseInt(it)} }
+        Integer[][] input = inputString.tokenize().collect { row -> row.collect { Integer.parseInt(it) } }
         int visible = 0
         for (x in 0..<input.length) {
             def row = input[x]
             for (y in 0..<row.length) {
-                boolean isVisible = false
-
                 def point = new Point(x, y)
                 def value = input[x][y]
-                def neighbours = Point.neighbours(input, point)
-                if (neighbours.size() < 4) {
-                    isVisible = true
-                }
-                if (!isVisible) {
-                    isVisible = isVisible || values(input, Point.pointsBetween(point, new Point(x, 0)) + new Point(x, 0)).findAll{it >= value}.size() == 0
-                    isVisible = isVisible || values(input, Point.pointsBetween(point, new Point(0, y)) + new Point(0, y)).findAll{it >= value}.size() == 0
-                    isVisible = isVisible || values(input, Point.pointsBetween(point, new Point(x, input.length))).findAll{it >= value}.size() == 0
-                    isVisible = isVisible || values(input, Point.pointsBetween(point, new Point(row.length, y))).findAll{it >= value}.size() == 0
-                }
+                boolean isVisible = Point.neighbours(input, point).size() < 4
+                isVisible = isVisible || values(input, Point.pointsBetweenIncludingLast(point, new Point(x, 0))).findAll { it >= value }.size() == 0
+                isVisible = isVisible || values(input, Point.pointsBetweenIncludingLast(point, new Point(0, y))).findAll { it >= value }.size() == 0
+                isVisible = isVisible || values(input, Point.pointsBetweenIncludingLast(point, new Point(x, input.length - 1))).findAll { it >= value }.size() == 0
+                isVisible = isVisible || values(input, Point.pointsBetweenIncludingLast(point, new Point(row.length - 1, y))).findAll { it >= value }.size() == 0
                 if (isVisible) {
                     visible++
                 }
@@ -32,26 +25,19 @@ class Day8 {
     }
 
     static part2(String inputString) {
-        Integer[][] input = inputString.tokenize().collect { row->row.collect {Integer.parseInt(it)} }
+        Integer[][] input = inputString.tokenize().collect { row -> row.collect { Integer.parseInt(it) } }
         int bestScore = 0
         for (x in 0..<input.length) {
             def row = input[x]
             for (y in 0..<row.length) {
-                boolean onEdge = false
-
                 def point = new Point(x, y)
                 def value = input[x][y]
-                def score = 0
-                def neighbours = Point.neighbours(input, point)
-                if (neighbours.size() < 4) {
-                    onEdge = true
-                }
-                if (!onEdge) {
-                    score =
-                        findScore(values(input, Point.pointsBetween(point, new Point(x, 0)) + new Point(x, 0)), value) *
-                        findScore(values(input, Point.pointsBetween(point, new Point(0, y)) + new Point(0, y)), value) *
-                        findScore(values(input, Point.pointsBetween(point, new Point(x, input.length))), value) *
-                        findScore(values(input, Point.pointsBetween(point, new Point(row.length, y))), value)
+                def score
+                if (Point.neighbours(input, point).size() == 4) {
+                    score = findScore(values(input, Point.pointsBetweenIncludingLast(point, new Point(x, 0))), value) *
+                            findScore(values(input, Point.pointsBetweenIncludingLast(point, new Point(0, y))), value) *
+                            findScore(values(input, Point.pointsBetweenIncludingLast(point, new Point(x, input.length - 1))), value) *
+                            findScore(values(input, Point.pointsBetweenIncludingLast(point, new Point(row.length - 1, y))), value)
                     if (score > bestScore)
                         bestScore = score
                 }
@@ -61,7 +47,7 @@ class Day8 {
     }
 
     static List<Integer> values(Integer[][] input, Collection<Point> points) {
-        return points.collect {input[it.x][it.y]}
+        return points.collect { input[it.x][it.y] }
     }
 
     static int findScore(Collection<Integer> list, int value) {
