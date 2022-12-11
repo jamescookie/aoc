@@ -27,12 +27,11 @@ class Day10 {
         long x = 1
         long cycle = 1
         StringBuffer sb = new StringBuffer()
-        AtomicInteger interest = new AtomicInteger(40)
         for (i in 0..<input.size()) {
-            printCycle(cycle, x, interest, sb)
+            printCycle(cycle, x, sb)
             cycle++
             if (input[i].startsWith('addx')) {
-                printCycle(cycle, x, interest, sb)
+                printCycle(cycle, x, sb)
                 int amount = Integer.parseInt(input[i] - 'addx ')
                 x += amount
                 cycle++
@@ -51,11 +50,11 @@ class Day10 {
         }
     }
 
-    static void printCycle(long cycle, long x, AtomicInteger rowLength, StringBuffer sb) {
-        while(cycle > 40) {
+    static void printCycle(long cycle, long x, StringBuffer sb) {
+        while (cycle > 40) {
             cycle -= 40
         }
-        if (cycle == x || cycle == x+1 || cycle == x+2) {
+        if (cycle == x || cycle == x + 1 || cycle == x + 2) {
             sb.append('#')
         } else {
             sb.append('.')
