@@ -8,7 +8,7 @@ class Day11 {
                 monkeys[j].takeTurn(monkeys)
             }
         }
-        def sorted = monkeys.sort{a,b-> b.inspected <=> a.inspected}
+        def sorted = monkeys.sort { a, b -> b.inspected <=> a.inspected }
         return sorted[0].inspected * sorted[1].inspected
     }
 
@@ -19,27 +19,26 @@ class Day11 {
                 monkeys[j].takeTurn(monkeys)
             }
         }
-        def sorted = monkeys.sort{a,b-> b.inspected <=> a.inspected}
+        def sorted = monkeys.sort { a, b -> b.inspected <=> a.inspected }
         return sorted[0].inspected * sorted[1].inspected
     }
 
     static class Monkey {
         List<Long> items
-        String[] operation
+        Object[] operation
         Closure<Long> test
         int prime
         long inspected = 0
         boolean divide
-        int monkey1
-        int monkey2
 
         Monkey(String input, boolean divide) {
             def split = input.split('\n')
             items = split[1].split(':')[1].split(',').collect { it.trim() as long }
-            operation = (split[2].split(':')[1].trim() - 'new = old ').split(' ')
+            def tmp = (split[2].split(':')[1].trim() - 'new = old ').split(' ')
+            operation = [tmp[0] == '*', tmp[1] == 'old' ? 'old' : Integer.parseInt(tmp[1])]
             prime = split[3].split(' by ')[1] as int
-            monkey1 = split[4].split(' monkey ')[1] as int
-            monkey2 = split[5].split(' monkey ')[1] as int
+            int monkey1 = split[4].split(' monkey ')[1] as int
+            int monkey2 = split[5].split(' monkey ')[1] as int
             test = { value -> (value % prime == 0) ? monkey1 : monkey2 }
             this.divide = divide
         }
@@ -52,7 +51,7 @@ class Day11 {
                 if (divide) {
                     item = (item / 3).longValue()
                 } else {
-                    item = item % (monkeys*.prime.inject(1) {result, i -> result * i})
+                    item = item % (monkeys*.prime.inject(1) { result, i -> result * i })
                 }
                 monkeys[test(item)].receive(item)
             }
@@ -63,20 +62,19 @@ class Day11 {
         }
 
         private long execute(long value) {
-            if (operation[0] == '*') {
+            if (operation[0]) {
                 if (operation[1] == 'old') {
                     return value * value
                 } else {
-                    return value * (operation[1] as int)
+                    return value * (operation[1])
                 }
             } else {
                 if (operation[1] == 'old') {
                     return value + value
                 } else {
-                    return value + (operation[1] as int)
+                    return value + (operation[1])
                 }
             }
-//            return Long.parseLong(Eval.me(operation.replaceAll('old', value.toString())).toString())
         }
     }
 }
