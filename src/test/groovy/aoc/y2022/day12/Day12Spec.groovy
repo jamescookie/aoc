@@ -32,11 +32,11 @@ abdefghi"""
 
         where:
         input  | output
-        t1     | 0
+        t1     | 29
     }
 
     def "part2"() {
         expect:
-        Day12.part2(InputReader.read("y2022/day12")) == 0
+        Day12.part2(InputReader.read("y2022/day12")) == 345
     }
 }

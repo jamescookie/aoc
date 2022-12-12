@@ -25,8 +25,26 @@ class Day12 {
     }
 
     static part2(String inputString) {
-        Integer[] input = inputString.tokenize().collect { it as int }
-        return null
+        Character[][] input = inputString.tokenize().collect { it.toCharArray() }
+
+        List<Point> start = []
+        Point end = null
+        for (x in 0..<input.length) {
+            def row = input[x]
+            for (y in 0..<row.size()) {
+                if (input[x][y] == 'S') {
+                    input[x][y] = 'a'
+                    start << new Point(x, y)
+                } else if (input[x][y] == 'a') {
+                    start << new Point(x, y)
+                } else if (input[x][y] == 'E') {
+                    input[x][y] = 'z'
+                    end = new Point(x, y)
+                }
+            }
+        }
+
+        return start.collect { findPath(input, [[new Place(it, 'a' as char)]] as List<List<Place>>, new Place(end, 'z' as char)) }.min()
     }
 
     static int findPath(Character[][] input, List<List<Place>> current, Place end) {
@@ -35,7 +53,12 @@ class Day12 {
             current.forEach { potential ->
                 Point.neighbours(input, potential[-1].point)
                         .findAll { input[it.x][it.y] - potential[-1].character < 2 }
-                        .forEach { placesToAdd.put(new Place(it, input[it.x][it.y]), new ArrayList<>(potential)) }
+                        .collect { new Place(it, input[it.x][it.y]) }
+                        .findAll { !potential.contains(it) }
+                        .forEach { placesToAdd.put(it, new ArrayList<>(potential)) }
+            }
+            if (!placesToAdd) {
+                return Integer.MAX_VALUE
             }
             def best = placesToAdd.get(end)
             if (best) {
