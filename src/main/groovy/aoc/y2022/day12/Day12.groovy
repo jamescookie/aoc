@@ -8,8 +8,7 @@ class Day12 {
 
         Point start = null
         Point end = null
-        List<Point> best = []
-        for (x in 0..<input.size()) {
+        for (x in 0..<input.length) {
             def row = input[x]
             for (y in 0..<row.size()) {
                 if (input[x][y] == 'S') {
@@ -19,14 +18,10 @@ class Day12 {
                     input[x][y] = 'z'
                     end = new Point(x, y)
                 }
-                best << new Point(x, y)
             }
         }
 
-        List<Point> current = []
-        findPath(input, start, current, end, best)
-
-        return best.size()
+        return findPath(input, [[new Place(start, 'a' as char)]] as List<List<Place>>, new Place(end, 'z' as char))
     }
 
     static part2(String inputString) {
@@ -34,24 +29,48 @@ class Day12 {
         return null
     }
 
-    static void findPath(Character[][] input, Point point, List<Point> current, Point end, List<Point> best) {
-        if (current.contains(point)) {
-            return
+    static int findPath(Character[][] input, List<List<Place>> current, Place end) {
+        while (true) {
+            Map<Place, List<Place>> placesToAdd = [:]
+            current.forEach { potential ->
+                Point.neighbours(input, potential[-1].point)
+                        .findAll { input[it.x][it.y] - potential[-1].character < 2 }
+                        .forEach { placesToAdd.put(new Place(it, input[it.x][it.y]), new ArrayList<>(potential)) }
+            }
+            def best = placesToAdd.get(end)
+            if (best) {
+                return best.size()
+            }
+            Character bestChar = current.collect { it[-1].character }.max()
+            def useThese = placesToAdd.findAll { k, v -> k.character > bestChar }
+            if (useThese) {
+                current = useThese.collect { k, v -> v << k }
+            } else {
+                current = placesToAdd.collect { k, v -> v << k }
+            }
         }
-        if (current.size() >= best.size()) {
-            return
+    }
+
+    static class Place {
+        Point point
+        Character character
+
+        Place(Point p, Character c) {
+            point = p;
+            character = c
         }
-        if (point == end) {
-            best.clear()
-            best.addAll(current)
-            println "best = $best"
-            return
+
+        @Override
+        int hashCode() {
+            return point.x.hashCode() * point.y.hashCode()
         }
-        current << point
-        char value = input[point.x][point.y]
-        def neighbours = Point.neighbours(input, point).findAll {input[it.x][it.y] - value == 1 || input[it.x][it.y] - value == 0}
-        for (i in 0..<neighbours.size()) {
-            findPath(input, neighbours[i], new ArrayList<Point>(current), end, best)
+
+        @Override
+        boolean equals(Object obj) {
+            if (obj instanceof Place) {
+                return (point.x == obj.point.x) && (point.y == obj.point.y)
+            }
+            return super.equals(obj)
         }
     }
 }
