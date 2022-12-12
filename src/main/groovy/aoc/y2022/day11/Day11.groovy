@@ -2,18 +2,15 @@ package aoc.y2022.day11
 
 class Day11 {
     static part1(String inputString) {
-        def monkeys = inputString.split('\n\n').collect { new Monkey(it, true) }
-        for (i in 0..<20) {
-            for (j in 0..<monkeys.size()) {
-                monkeys[j].takeTurn(monkeys)
-            }
-        }
-        def sorted = monkeys.sort { a, b -> b.inspected <=> a.inspected }
-        return sorted[0].inspected * sorted[1].inspected
+        doRounds(inputString, 20, true)
     }
 
     static part2(String inputString, amount) {
-        def monkeys = inputString.split('\n\n').collect { new Monkey(it, false) }
+        doRounds(inputString, amount, false)
+    }
+
+    static long doRounds(String inputString, int amount, boolean divide) {
+        def monkeys = inputString.split('\n\n').collect { new Monkey(it, divide) }
         for (i in 0..<amount) {
             for (j in 0..<monkeys.size()) {
                 monkeys[j].takeTurn(monkeys)
