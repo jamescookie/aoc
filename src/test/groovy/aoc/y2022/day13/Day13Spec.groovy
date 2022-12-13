@@ -56,6 +56,6 @@ class Day13Spec extends Specification {
 
     def "part2"() {
         expect:
-        Day13.part2(InputReader.read("y2022/day13")) == 0
+        Day13.part2(InputReader.read("y2022/day13")) == 27930
     }
 }

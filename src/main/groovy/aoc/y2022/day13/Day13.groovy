@@ -2,9 +2,9 @@ package aoc.y2022.day13
 
 class Day13 {
     static part1(String inputString) {
-        def input = inputString.split('\n\n').collect {pairs->pairs.split('\n').collect {Eval.me(it)}}
+        def input = inputString.split('\n\n').collect { pairs -> pairs.split('\n').collect { Eval.me(it) } }
         int result = 0
-        for (i in 0..< input.size()) {
+        for (i in 0..<input.size()) {
             if (correctOrder(input[i][0], input[i][1]) != Result.INCORRECT) {
                 def index = (i + 1)
                 result += index
@@ -14,8 +14,21 @@ class Day13 {
     }
 
     static part2(String inputString) {
-        Integer[] input = inputString.tokenize().collect { it as int }
-        return null
+        String divider1 = "[[2]]"
+        String divider2 = "[[6]]"
+        List<Object> input = (inputString+"\n"+divider1+"\n"+divider2).replaceAll('\n\n', '\n').split('\n').collect { pairs -> pairs.split('\n').collect { Eval.me(it) } }
+
+        def sort = input.sort { a, b ->
+            switch (correctOrder(a, b)) {
+                case Result.CORRECT:
+                    return -1
+                case Result.EQUAL:
+                    return 0
+                case Result.INCORRECT:
+                    return 1
+            }
+        }.collect { (it as String)[1..-2] }
+        return (sort.indexOf(divider1) + 1) * (sort.indexOf(divider2) + 1)
     }
 
     static enum Result {
