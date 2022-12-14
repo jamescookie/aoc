@@ -6,17 +6,15 @@ class Day14 {
     static part1(String inputString) {
         Set<Point> cave = createCave(inputString)
         Point source = new Point(500, 0)
-        boolean abyss = false
         Point falling = new Point(source)
         int lowestY = (cave*.y).max() + 1
         HashSet<Point> points = new HashSet<>(cave)
-        while (!abyss) {
-            Point next = nextPoint(falling, points)
+        Point next
+        while (falling.y != lowestY) {
+            next = nextPoint(falling, points)
             if (next == null) {
                 points.add(falling)
                 falling = new Point(source)
-            } else if (next.y == lowestY) {
-                abyss = true
             } else {
                 falling = next
             }
@@ -28,12 +26,12 @@ class Day14 {
     static part2(String inputString) {
         Set<Point> cave = createCave(inputString)
         Point source = new Point(500, 0)
-        boolean done = false
         Point falling = new Point(source)
         int lowestY = (cave*.y).max() + 2
         HashSet<Point> points = new HashSet<>(cave)
-        while (!done) {
-            Point next = nextPoint(falling, points)
+        Point next
+        while (true) {
+            next = nextPoint(falling, points)
             if (next == null || next.y == lowestY) {
                 points.add(falling)
                 if (falling == source) break
