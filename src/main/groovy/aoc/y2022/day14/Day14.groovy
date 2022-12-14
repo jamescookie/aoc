@@ -9,12 +9,11 @@ class Day14 {
         boolean abyss = false
         Point falling = new Point(source)
         int lowestY = (cave*.y).max() + 1
-        HashMap<Point, Boolean> points = [:]
-        cave.forEach { points.put(it, false) }
+        HashSet<Point> points = new HashSet<>(cave)
         while (!abyss) {
             Point next = nextPoint(falling, points)
             if (next == null) {
-                points.put(falling, true)
+                points.add(falling)
                 falling = new Point(source)
             } else if (next.y == lowestY) {
                 abyss = true
@@ -23,7 +22,7 @@ class Day14 {
             }
         }
 
-        return points.findAll { k, v -> v }.size()
+        return points.size() - cave.size()
     }
 
     static part2(String inputString) {
@@ -32,12 +31,11 @@ class Day14 {
         boolean done = false
         Point falling = new Point(source)
         int lowestY = (cave*.y).max() + 2
-        HashMap<Point, Boolean> points = [:]
-        cave.forEach { points.put(it, false) }
+        HashSet<Point> points = new HashSet<>(cave)
         while (!done) {
             Point next = nextPoint(falling, points)
             if (next == null || next.y == lowestY) {
-                points.put(falling, true)
+                points.add(falling)
                 if (falling == source) break
                 falling = new Point(source)
             } else {
@@ -45,7 +43,7 @@ class Day14 {
             }
         }
 
-        return points.findAll { k, v -> v }.size()
+        return points.size() - cave.size()
     }
 
     static Set<Point> createCave(String inputString) {
@@ -59,17 +57,17 @@ class Day14 {
         cave
     }
 
-    static Point nextPoint(Point point, Map<Point, Boolean> points) {
+    static Point nextPoint(Point point, Collection<Point> points) {
         Point nextDown = new Point(point.x, point.y + 1)
-        if (!points.containsKey(nextDown)) {
+        if (!points.contains(nextDown)) {
             return nextDown
         }
         Point nextDownLeft = new Point(point.x - 1, point.y + 1)
-        if (!points.containsKey(nextDownLeft)) {
+        if (!points.contains(nextDownLeft)) {
             return nextDownLeft
         }
         Point nextDownRight = new Point(point.x + 1, point.y + 1)
-        if (!points.containsKey(nextDownRight)) {
+        if (!points.contains(nextDownRight)) {
             return nextDownRight
         }
         null
