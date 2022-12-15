@@ -4,11 +4,11 @@ import aoc.Point
 
 class Day15 {
     static part1(String inputString, int y) {
-        def input = inputString.split(System.lineSeparator()).collect {line->
+        def input = inputString.split(System.lineSeparator()).collect { line ->
             line -= 'Sensor at x=';
             line -= ' closest beacon is at x='
             line = line.replaceAll(' y=', '')
-            line.split(':').collect{new Point(it)}
+            line.split(':').collect { new Point(it) }
         }
 
         int minX = -4000000
@@ -23,7 +23,7 @@ class Day15 {
             findAllOnLine(sensor, dx + dy, y, found, minX)
         }
         Set<Point> excluded = input.collect { it[0] } + input.collect { it[1] }
-        excluded.findAll{it.y == y}*.x.forEach{found[it-minX]=false}
+        excluded.findAll { it.y == y }*.x.forEach { found[it - minX] = false }
 
         return found.findAll { it }.size()
     }
@@ -41,15 +41,6 @@ class Day15 {
         }
     }
 
-
-
-    static part2(String inputString) {
-        Integer[] input = inputString.tokenize().collect { it as int }
-        return null
-    }
-}
-/*
-
     static part2(String inputString, int max) {
         def input = inputString.split(System.lineSeparator()).collect { line ->
             line -= 'Sensor at x=';
@@ -58,43 +49,30 @@ class Day15 {
             line.split(':').collect { new Point(it) }
         }
 
-        Set<Point> excluded = input.collect { it[0] } + input.collect { it[1] }
-        int minX = (excluded*.x).min() as int
-        int maxX = (excluded*.x).max() as int
-        List<Boolean> found = new ArrayList<>((maxX - minX) + 1)
+        boolean[][] found = new boolean[max + 1]
+        for (i in 0..<found.length) {
+            boolean[] tmp = new boolean[max + 1]
+            found[i] = tmp
+        }
 
         for (i in 0..<input.size()) {
             Point sensor = input[i][0]
             Point beacon = input[i][1]
             int dx = Math.abs(sensor.x - beacon.x);
             int dy = Math.abs(sensor.y - beacon.y);
-            find(sensor, dx + dy, 0, max, excluded, found)
+            for (j in 0..<max + 1) {
+                findAllOnLine(sensor, dx + dy, j, found[j], 0)
+            }
         }
 
-        if (found.size() == 1)
-            return (found[0].x * 4000000) + found[0].y
-        else
-            return null
-    }
-
-    static void find(Point p, int size, int min, int max, Set<Point> excluded, Set<Point> found) {
-        for (y in -size..<size + 1) {
-            if (p.y + y > max) continue
-            if (p.y + y < min) continue
-            int amount = size - Math.abs(y)
-            for (x in -amount..<amount + 1) {
-                if (p.x + x > max) continue
-                if (p.x + x < min) continue
-                def point = new Point(p.x + x, p.y + y)
-                if (!excluded.contains(point)) {
-                    if (found.contains(point)) {
-                        found.remove(point)
-                        excluded << point
-                    } else {
-                        found << point
-                    }
+        for (y in 0..<found.length) {
+            boolean[] tmp = found[y]
+            for (x in 0..<tmp.length) {
+                if (!tmp[x]) {
+                    return x * 4000000 + y
                 }
             }
         }
+        return 0
     }
- */
+}
