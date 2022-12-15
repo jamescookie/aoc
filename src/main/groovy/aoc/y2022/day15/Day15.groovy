@@ -49,34 +49,29 @@ class Day15 {
         return 0
     }
 
-    static void findAllOnLine(Point p, int size, int y, List<MyRange> found, int minX) {
-        def startY = y - p.y
-        if (startY < -size || startY >= size) return
-        int amount = size - Math.abs(startY)
+    static void findAllOnLine(Point p, int distance, int y, List<MyRange> found, int minX) {
+        int startY = y - p.y
+        if (startY < -distance || startY >= distance) return
+        int amount = distance - Math.abs(startY)
         int start = -amount + p.x - minX
         int end = amount + p.x - minX
 
-        found << new MyRange(start, end)
-        reduceRanges(found)
-    }
-
-    static void reduceRanges(List<MyRange> ranges) {
-        if (ranges.size() == 1) return
+        found.add(new MyRange(start, end))
+        if (found.size() == 1) return
+        boolean merged
         while (true) {
-            boolean merge = false
-            for (i in 0..<ranges.size() - 1) {
-                for (j in i + 1..<ranges.size()) {
-                    merge = ranges[i].merge(ranges[j])
-                    if (merge) {
-                        ranges.remove(j)
+            merged = false
+            for (i in 0..<found.size() - 1) {
+                for (j in i + 1..<found.size()) {
+                    merged = found[i].merge(found[j])
+                    if (merged) {
+                        found.remove(j)
                         break
                     }
                 }
-                if (merge) break
+                if (merged) break
             }
-            if (!merge) {
-                break
-            }
+            if (!merged) break
         }
     }
 
