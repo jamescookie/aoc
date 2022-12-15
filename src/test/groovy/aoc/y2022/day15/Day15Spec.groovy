@@ -47,6 +47,6 @@ Sensor at x=20, y=1: closest beacon is at x=15, y=3"""
 
     def "part2"() {
         expect:
-        Day15.part2(InputReader.read("y2022/day15"), 4000000) == 0
+        Day15.part2(InputReader.read("y2022/day15"), 4000000) == 10229191267339
     }
 }
