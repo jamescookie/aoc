@@ -25,7 +25,7 @@ class Day15 {
             findAllOnLine(sensor, dx + dy, y, found, minX)
         }
 
-        return new IntRange(found*.getFrom().min(), found*.getTo().max()).size() - excluded.findAll { it.y == y }*.x.size()
+        return new IntRange(found*.from.min(), found*.to.max()).size() - excluded.findAll { it.y == y }*.x.size()
     }
 
     static void findAllOnLine(Point p, int size, int y, List<MyRange> found, int minX) {
@@ -36,27 +36,24 @@ class Day15 {
         int start = -amount + p.x - minX
         int end = amount + p.x - minX
 
-        if (found.isEmpty()) found << new MyRange(start, end)
-        Set<MyRange> newRanges = []
-        found.forEach{newRanges.addAll(mergeRange(it, start, end))}
+        def myRange = new MyRange(start, end)
+        Set<MyRange> newRanges = new HashSet<>(found)
+        newRanges << myRange
         found.clear()
         found.addAll(reduceRanges(newRanges))
     }
 
-    static Collection<MyRange> reduceRanges(Collection<MyRange> ranges) {
-        Set<MyRange> newRanges = new HashSet<>(ranges)
+    static Collection<MyRange> reduceRanges(Collection<MyRange> newRanges) {
         while(true) {
             boolean merge = false
             for (i in 0..<newRanges.size() - 1) {
                 for (j in i + 1..<newRanges.size()) {
                     def range1 = newRanges[i]
                     def range2 = newRanges[j]
-                    def merged = mergeRange(range1, range2)
-                    if (merged.size() == 1) {
+                    def merged = range1.merge(range2)
+                    if (merged) {
                         merge = true
-                        newRanges.remove(range1)
                         newRanges.remove(range2)
-                        newRanges << merged[0]
                         break
                     }
                 }
@@ -67,24 +64,6 @@ class Day15 {
             }
         }
         return newRanges
-    }
-
-    static List<MyRange> mergeRange(MyRange range1, MyRange range2) {
-        return mergeRange(range1, range2.getFrom(), range2.getTo())
-    }
-
-    static List<MyRange> mergeRange(MyRange range, int start, int end) {
-        if (range.contains(start) && range.contains(end)) {
-            return [range]
-        } else if (start < range.getFrom() && range.contains(end)) {
-            return [new MyRange(start, range.getTo())]
-        } else if (range.contains(start) && range.getTo() < end) {
-            return [new MyRange(range.getFrom(), end)]
-        } else if (start < range.getFrom() && range.getTo() < end) {
-            return [new MyRange(start, end)]
-        } else {
-            return [new MyRange(start, end), range]
-        }
     }
 
     static part2(String inputString, int max) {
@@ -104,7 +83,7 @@ class Day15 {
                 findAllOnLine(sensor, Math.abs(sensor.x - input[i][1].x) + Math.abs(sensor.y - input[i][1].y), y, found, 0)
             }
             if (found.size() > 1) {
-                return (((found*.getTo().min() + 1) * 4000000L) + y) as long
+                return (((found*.to.min() + 1) * 4000000L) + y) as long
             }
         }
 
@@ -122,6 +101,26 @@ class Day15 {
 
         boolean contains(int x) {
             return x >= from && x <= to
+        }
+
+        boolean merge(MyRange other) {
+            int end = other.to
+            int start = other.from
+            if (contains(start) && contains(end)) {
+                return true
+            } else if (start < from && contains(end)) {
+                from = start
+                return true
+            } else if (contains(start) && to < end) {
+                to = end
+                return true
+            } else if (start < from && to < end) {
+                from = start
+                to = end
+                return true
+            } else {
+                return false
+            }
         }
     }
 }
