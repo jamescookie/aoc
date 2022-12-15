@@ -15,7 +15,7 @@ class Day15 {
         int maxX = (excluded*.x).max() as int
         int diff = maxX - minX
         minX -= diff
-        List<Range> found = []
+        List<MyRange> found = []
 
         for (i in 0..<input.size()) {
             Point sensor = input[i][0]
@@ -28,7 +28,7 @@ class Day15 {
         return new IntRange(found*.getFrom().min(), found*.getTo().max()).size() - excluded.findAll { it.y == y }*.x.size()
     }
 
-    static void findAllOnLine(Point p, int size, int y, List<Range<Integer>> found, int minX) {
+    static void findAllOnLine(Point p, int size, int y, List<MyRange> found, int minX) {
         def startY = y - p.y
         if (startY < -size) return
         if (startY > size + 1) return
@@ -36,15 +36,15 @@ class Day15 {
         int start = -amount + p.x - minX
         int end = amount + p.x - minX
 
-        if (found.isEmpty()) found << (start..end)
-        Set<Range<Integer>> newRanges = []
+        if (found.isEmpty()) found << new MyRange(start, end)
+        Set<MyRange> newRanges = []
         found.forEach{newRanges.addAll(mergeRange(it, start, end))}
         found.clear()
         found.addAll(reduceRanges(newRanges))
     }
 
-    static Collection<Range<Integer>> reduceRanges(Collection<Range<Integer>> ranges) {
-        Set<Range<Integer>> newRanges = new HashSet<>(ranges)
+    static Collection<MyRange> reduceRanges(Collection<MyRange> ranges) {
+        Set<MyRange> newRanges = new HashSet<>(ranges)
         while(true) {
             boolean merge = false
             for (i in 0..<newRanges.size() - 1) {
@@ -69,21 +69,21 @@ class Day15 {
         return newRanges
     }
 
-    static List<Range<Integer>> mergeRange(Range<Integer> range1, Range<Integer> range2) {
+    static List<MyRange> mergeRange(MyRange range1, MyRange range2) {
         return mergeRange(range1, range2.getFrom(), range2.getTo())
     }
 
-    static List<Range<Integer>> mergeRange(Range<Integer> range, int start, int end) {
+    static List<MyRange> mergeRange(MyRange range, int start, int end) {
         if (range.contains(start) && range.contains(end)) {
             return [range]
         } else if (start < range.getFrom() && range.contains(end)) {
-            return [(start..range.getTo())]
+            return [new MyRange(start, range.getTo())]
         } else if (range.contains(start) && range.getTo() < end) {
-            return [(range.getFrom()..end)]
+            return [new MyRange(range.getFrom(), end)]
         } else if (start < range.getFrom() && range.getTo() < end) {
-            return [(start..end)]
+            return [new MyRange(start, end)]
         } else {
-            return [(start..end), range]
+            return [new MyRange(start, end), range]
         }
     }
 
@@ -109,5 +109,19 @@ class Day15 {
         }
 
         return 0
+    }
+
+    static class MyRange {
+        int from
+        int to
+        
+        MyRange(int start, int end) {
+            from = start
+            to = end
+        }
+
+        boolean contains(int x) {
+            return x >= from && x <= to
+        }
     }
 }
