@@ -28,7 +28,30 @@ class Day15 {
         return new IntRange(found*.from.min(), found*.to.max()).size() - excluded.findAll { it.y == y }*.x.size()
     }
 
-    static void findAllOnLine(Point p, int size, int y, List<MyRange> found, int minX) {
+    static part2(String inputString, int max) {
+        def input = inputString.split(System.lineSeparator()).collect { line ->
+            line -= 'Sensor at x=';
+            line -= ' closest beacon is at x='
+            line = line.replaceAll(' y=', '')
+            line.split(':').collect { new Point(it) }
+        }
+
+        long start = System.currentTimeMillis()
+        for (y in 0..<max + 1) {
+            if (y % 100000 == 0) println("$y: ${System.currentTimeMillis() - start}")
+            Collection<MyRange> found = new ArrayList<>()
+            for (i in 0..<input.size()) {
+                findAllOnLine(input[i][0], Math.abs(input[i][0].x - input[i][1].x) + Math.abs(input[i][0].y - input[i][1].y), y, found, 0)
+            }
+            if (found.size() > 1) {
+                return (((found*.to.min() + 1) * 4000000L) + y) as long
+            }
+        }
+
+        return 0
+    }
+
+    static void findAllOnLine(Point p, int size, int y, Collection<MyRange> found, int minX) {
         def startY = y - p.y
         if (startY < -size) return
         if (startY > size + 1) return
@@ -36,14 +59,13 @@ class Day15 {
         int start = -amount + p.x - minX
         int end = amount + p.x - minX
 
-        def myRange = new MyRange(start, end)
-        found << myRange
+        found << new MyRange(start, end)
         reduceRanges(found)
     }
 
     static void reduceRanges(Collection<MyRange> ranges) {
         if (ranges.size() == 1) return
-        while(true) {
+        while (true) {
             boolean merge = false
             for (i in 0..<ranges.size() - 1) {
                 for (j in i + 1..<ranges.size()) {
@@ -64,34 +86,10 @@ class Day15 {
         }
     }
 
-    static part2(String inputString, int max) {
-        def input = inputString.split(System.lineSeparator()).collect { line ->
-            line -= 'Sensor at x=';
-            line -= ' closest beacon is at x='
-            line = line.replaceAll(' y=', '')
-            line.split(':').collect { new Point(it) }
-        }
-
-        long start = System.currentTimeMillis()
-        for (y in 0..<max + 1) {
-            if (y % 100000 == 0) println("$y: ${System.currentTimeMillis() - start}")
-            List<Range> found = []
-            for (i in 0..<input.size()) {
-                Point sensor = input[i][0]
-                findAllOnLine(sensor, Math.abs(sensor.x - input[i][1].x) + Math.abs(sensor.y - input[i][1].y), y, found, 0)
-            }
-            if (found.size() > 1) {
-                return (((found*.to.min() + 1) * 4000000L) + y) as long
-            }
-        }
-
-        return 0
-    }
-
     static class MyRange {
         int from
         int to
-        
+
         MyRange(int start, int end) {
             from = start
             to = end
