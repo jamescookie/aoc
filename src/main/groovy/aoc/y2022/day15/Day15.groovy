@@ -5,7 +5,7 @@ import aoc.Point
 class Day15 {
     static part1(String inputString, int y) {
         def input = inputString.split(System.lineSeparator()).collect { line ->
-            line -= 'Sensor at x=';
+            line -= 'Sensor at x='
             line -= ' closest beacon is at x='
             line = line.replaceAll(' y=', '')
             line.split(':').collect { new Point(it) }
@@ -30,14 +30,14 @@ class Day15 {
 
     static part2(String inputString, int max) {
         def input = inputString.split(System.lineSeparator()).collect { line ->
-            line -= 'Sensor at x=';
+            line -= 'Sensor at x='
             line -= ' closest beacon is at x='
             line = line.replaceAll(' y=', '')
             line.split(':').collect { new Point(it) }
         }
 
         for (y in 0..<max + 1) {
-            Collection<MyRange> found = new ArrayList<>()
+            List<MyRange> found = new ArrayList<>()
             for (i in 0..<input.size()) {
                 findAllOnLine(input[i][0], Math.abs(input[i][0].x - input[i][1].x) + Math.abs(input[i][0].y - input[i][1].y), y, found, 0)
             }
@@ -49,7 +49,7 @@ class Day15 {
         return 0
     }
 
-    static void findAllOnLine(Point p, int size, int y, Collection<MyRange> found, int minX) {
+    static void findAllOnLine(Point p, int size, int y, List<MyRange> found, int minX) {
         def startY = y - p.y
         if (startY < -size || startY >= size) return
         int amount = size - Math.abs(startY)
@@ -60,7 +60,7 @@ class Day15 {
         reduceRanges(found)
     }
 
-    static void reduceRanges(Collection<MyRange> ranges) {
+    static void reduceRanges(List<MyRange> ranges) {
         if (ranges.size() == 1) return
         while (true) {
             boolean merge = false
@@ -68,7 +68,7 @@ class Day15 {
                 for (j in i + 1..<ranges.size()) {
                     merge = ranges[i].merge(ranges[j])
                     if (merge) {
-                        ranges.remove(ranges[j])
+                        ranges.remove(j)
                         break
                     }
                 }
