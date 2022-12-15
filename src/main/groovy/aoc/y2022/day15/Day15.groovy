@@ -25,7 +25,7 @@ class Day15 {
             findAllOnLine(sensor, dx + dy, y, found, minX)
         }
 
-        return new IntRange(found*.from.min(), found*.to.max()).size() - excluded.findAll { it.y == y }*.x.size()
+        return new IntRange(found*.from.min() as int, found*.to.max() as int).size() - excluded.findAll { it.y == y }*.x.size()
     }
 
     static part2(String inputString, int max) {
@@ -36,9 +36,7 @@ class Day15 {
             line.split(':').collect { new Point(it) }
         }
 
-        long start = System.currentTimeMillis()
         for (y in 0..<max + 1) {
-            if (y % 100000 == 0) println("$y: ${System.currentTimeMillis() - start}")
             Collection<MyRange> found = new ArrayList<>()
             for (i in 0..<input.size()) {
                 findAllOnLine(input[i][0], Math.abs(input[i][0].x - input[i][1].x) + Math.abs(input[i][0].y - input[i][1].y), y, found, 0)
@@ -53,8 +51,7 @@ class Day15 {
 
     static void findAllOnLine(Point p, int size, int y, Collection<MyRange> found, int minX) {
         def startY = y - p.y
-        if (startY < -size) return
-        if (startY > size + 1) return
+        if (startY < -size || startY >= size) return
         int amount = size - Math.abs(startY)
         int start = -amount + p.x - minX
         int end = amount + p.x - minX
@@ -69,12 +66,9 @@ class Day15 {
             boolean merge = false
             for (i in 0..<ranges.size() - 1) {
                 for (j in i + 1..<ranges.size()) {
-                    def range1 = ranges[i]
-                    def range2 = ranges[j]
-                    def merged = range1.merge(range2)
-                    if (merged) {
-                        merge = true
-                        ranges.remove(range2)
+                    merge = ranges[i].merge(ranges[j])
+                    if (merge) {
+                        ranges.remove(ranges[j])
                         break
                     }
                 }
@@ -95,28 +89,17 @@ class Day15 {
             to = end
         }
 
-        boolean contains(int x) {
-            return x >= from && x <= to
-        }
-
         boolean merge(MyRange other) {
-            int end = other.to
-            int start = other.from
-            if (contains(start) && contains(end)) {
-                return true
-            } else if (start < from && contains(end)) {
-                from = start
-                return true
-            } else if (contains(start) && to < end) {
-                to = end
-                return true
-            } else if (start < from && to < end) {
-                from = start
-                to = end
-                return true
-            } else {
+            if (other.to < from || other.from > to) {
                 return false
             }
+            if (to < other.to) {
+                to = other.to
+            }
+            if (other.from < from) {
+                from = other.from
+            }
+            return true
         }
     }
 }
