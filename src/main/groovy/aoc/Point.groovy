@@ -156,10 +156,43 @@ class Point implements Comparable<Point> {
         return points
     }
 
+    Set<Point> findAllInside(int size) {
+        Set<Point> points = new HashSet<>()
+        for (y in -size..<size + 1) {
+            int amount = size - Math.abs(y)
+            for (x in -amount..<amount + 1) {
+                points << new Point(this.x + x, this.y + y)
+            }
+        }
+        return points
+    }
+
     @Override
     int compareTo(Point p2) {
         return Comparator.comparingInt({ p -> p.x })
                 .thenComparingInt({ p -> p.y })
                 .compare(this, p2)
+    }
+
+    static void print(List<Point> points) {
+        print(points.collectEntries { [it, '#' as Character] })
+    }
+
+    static void print(Map<Point, Character> map) {
+        Set<Point> points = map.keySet()
+        int maxX = (points*.x).max() as int
+        int maxY = (points*.y).max() as int
+        int minX = (points*.x).min() as int
+        int minY = (points*.y).min() as int
+        StringBuilder sb = new StringBuilder()
+        def defaultChar = '.' as Character
+
+        for (y in minY..<maxY + 1) {
+            for (x in minX..<maxX + 1) {
+                sb.append(map.getOrDefault(new Point(x, y), defaultChar))
+            }
+            sb.append(System.lineSeparator())
+        }
+        println sb.toString()
     }
 }
