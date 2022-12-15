@@ -33,20 +33,20 @@ Sensor at x=20, y=1: closest beacon is at x=15, y=3"""
 
     def "part1"() {
         expect:
-        Day15.part1(InputReader.read("y2022/day15"), 2000000) == 0
+        Day15.part1(InputReader.read("y2022/day15"), 2000000) == 5144286
     }
 
     def "part2 warmup tests"() {
         expect:
-        Day15.part2(input) == output
+        Day15.part2(input, 20) == output
 
         where:
         input | output
-        t1    | 0
+        t1    | 56000011
     }
 
     def "part2"() {
         expect:
-        Day15.part2(InputReader.read("y2022/day15")) == 0
+        Day15.part2(InputReader.read("y2022/day15"), 4000000) == 0
     }
 }
