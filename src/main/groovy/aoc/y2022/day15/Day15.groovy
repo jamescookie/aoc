@@ -37,23 +37,22 @@ class Day15 {
         int end = amount + p.x - minX
 
         def myRange = new MyRange(start, end)
-        Set<MyRange> newRanges = new HashSet<>(found)
-        newRanges << myRange
-        found.clear()
-        found.addAll(reduceRanges(newRanges))
+        found << myRange
+        reduceRanges(found)
     }
 
-    static Collection<MyRange> reduceRanges(Collection<MyRange> newRanges) {
+    static void reduceRanges(Collection<MyRange> ranges) {
+        if (ranges.size() == 1) return
         while(true) {
             boolean merge = false
-            for (i in 0..<newRanges.size() - 1) {
-                for (j in i + 1..<newRanges.size()) {
-                    def range1 = newRanges[i]
-                    def range2 = newRanges[j]
+            for (i in 0..<ranges.size() - 1) {
+                for (j in i + 1..<ranges.size()) {
+                    def range1 = ranges[i]
+                    def range2 = ranges[j]
                     def merged = range1.merge(range2)
                     if (merged) {
                         merge = true
-                        newRanges.remove(range2)
+                        ranges.remove(range2)
                         break
                     }
                 }
@@ -63,7 +62,6 @@ class Day15 {
                 break
             }
         }
-        return newRanges
     }
 
     static part2(String inputString, int max) {
