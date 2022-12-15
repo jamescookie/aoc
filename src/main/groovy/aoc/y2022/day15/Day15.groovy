@@ -10,9 +10,12 @@ class Day15 {
             line = line.replaceAll(' y=', '')
             line.split(':').collect { new Point(it) }
         }
-
-        int minX = -4000000
-        int maxX = 8000000
+        Set<Point> excluded = input.collect { it[0] } + input.collect { it[1] }
+        int minX = (excluded*.x).min() as int
+        int maxX = (excluded*.x).max() as int
+        int diff = maxX - minX
+        minX -= diff
+        maxX += diff
         boolean[] found = new boolean[(maxX - minX) + 1]
 
         for (i in 0..<input.size()) {
@@ -22,7 +25,6 @@ class Day15 {
             int dy = Math.abs(sensor.y - beacon.y);
             findAllOnLine(sensor, dx + dy, y, found, minX)
         }
-        Set<Point> excluded = input.collect { it[0] } + input.collect { it[1] }
         excluded.findAll { it.y == y }*.x.forEach { found[it - minX] = false }
 
         return found.findAll { it }.size()
@@ -49,30 +51,21 @@ class Day15 {
             line.split(':').collect { new Point(it) }
         }
 
-        boolean[][] found = new boolean[max + 1]
-        for (i in 0..<found.length) {
-            boolean[] tmp = new boolean[max + 1]
-            found[i] = tmp
-        }
-
-        for (i in 0..<input.size()) {
-            Point sensor = input[i][0]
-            Point beacon = input[i][1]
-            int dx = Math.abs(sensor.x - beacon.x);
-            int dy = Math.abs(sensor.y - beacon.y);
-            for (j in 0..<max + 1) {
-                findAllOnLine(sensor, dx + dy, j, found[j], 0)
+        for (z in 0..<max + 1) {
+            boolean[] found = new boolean[max + 1]
+            for (i in 0..<input.size()) {
+                Point sensor = input[i][0]
+                Point beacon = input[i][1]
+                int dx = Math.abs(sensor.x - beacon.x);
+                int dy = Math.abs(sensor.y - beacon.y);
+                findAllOnLine(sensor, dx + dy, z, found, 0)
+            }
+            def index = found.findIndexOf { !it }
+            if (index != -1) {
+                return index * 4000000 + z
             }
         }
 
-        for (y in 0..<found.length) {
-            boolean[] tmp = found[y]
-            for (x in 0..<tmp.length) {
-                if (!tmp[x]) {
-                    return x * 4000000 + y
-                }
-            }
-        }
         return 0
     }
 }
