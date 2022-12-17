@@ -1,35 +1,116 @@
 package aoc.y2022.day16
 
+
 import java.util.concurrent.atomic.AtomicLong
 
 class Day16 {
     static part1(String inputString) {
         Map<String, Valve> valves = [:]
-        inputString.split(System.lineSeparator()).each {new Valve(it, valves)}
+        inputString.split(System.lineSeparator()).each { new Valve(it, valves) }
 
         int max = 31
         AtomicLong best = new AtomicLong(0)
-        findPressure(max, best, valves, [new Minute('AA', 0)], [])
+        List<String> allowedValves = valves.values().findAll { it.shouldOpen }.collect { it.name }
+        findPressure(max, best, valves, allowedValves, [new Minute('AA', 0)], [])
         return best.get()
     }
 
     static part2(String inputString) {
         Map<String, Valve> valves = [:]
-        inputString.split(System.lineSeparator()).each {new Valve(it, valves)}
+        inputString.split(System.lineSeparator()).each { new Valve(it, valves) }
 
-        return null
+        AtomicLong best = new AtomicLong(0)
+        findPressureWithTwo(26, best, valves)
+
+        return best.get()
     }
 
-    protected static void findPressure(int max, AtomicLong best, Map<String, Valve> valves, List<Minute> minutes, List<String> currentlyOpen, String nextOpen = null) {
+    protected static void findPressureWithTwo(int max, AtomicLong best, Map<String, Valve> valves) {
+        //split up targets
+        //combine scores
+        List<String> allowedValves = valves.values().findAll { it.shouldOpen }.collect { it.name }
+        List<Pair> combinations = generateCombinations(allowedValves)
+
+        combinations.each {
+            AtomicLong best1 = new AtomicLong(0)
+            AtomicLong best2 = new AtomicLong(0)
+            findPressure(max, best1, valves, it.a, [new Minute('AA', 0)], [])
+            findPressure(max, best2, valves, it.b, [new Minute('AA', 0)], [])
+            long score = best1.get() + best2.get()
+            if (score > best.get()) {
+                best.set(score)
+            }
+        }
+    }
+
+    //needs more work
+    static List<Pair> generateCombinations(List<String> input) {
+        List<Pair> subsets = new ArrayList<>();
+
+        int k = input.size() / 2
+        int[] s = new int[k]
+
+        if (k <= input.size()) {
+            // first index sequence: 0, 1, 2, ...
+            for (int x = 0; (s[x] = x) < k - 1; x++);
+            List<String> left = getSubset(input, s)
+            for (; ;) {
+                int i;
+                // find position of item that can be incremented
+                for (i = k - 1; i >= 0 && s[i] == input.size() - k + i; i--);
+                if (i < 0) {
+                    break;
+                }
+                s[i]++;                    // increment this item
+                for (++i; i < k; i++) {    // fill up remaining items
+                    s[i] = s[i - 1] + 1;
+                }
+                subsets.add(new Pair(left, getSubset(input, s)));
+            }
+        }
+
+        return subsets
+    }
+
+    static List<String> getSubset(List<String> input, int[] subset) {
+        List<String> result = new ArrayList<>()
+        for (int i = 0; i < subset.length; i++)
+            result << input[subset[i]];
+        return result;
+    }
+
+    static class Pair {
+        List<String> a
+        List<String> b
+
+        Pair(List<String> a, List<String> b) {
+            this.a = a
+            this.b = b
+        }
+
+        String toString() {
+            "[$a, $b]"
+        }
+
+        boolean equals(Object obj) {
+            if (obj instanceof Pair) {
+                Pair pt = (Pair) obj
+                return (a == pt.a) && (b == pt.b)
+            }
+            return super.equals(obj)
+        }
+    }
+
+    protected static void findPressure(int max, AtomicLong best, Map<String, Valve> valves, List<String> allowedValves, List<Minute> minutes, List<String> currentlyOpen, String nextOpen = null) {
         long currentScore = minutes[-1].score
-        List<String> targets = valves.values().findAll {it.shouldOpen}.collect {it.name} - currentlyOpen - [nextOpen]
+        List<String> targets = allowedValves - currentlyOpen - [nextOpen]
         if (targets.size() == 0 || minutes.size() >= max) {
             if (nextOpen != null) {
                 currentScore += (valves.get(nextOpen).pressure * (max - minutes.size() - 1))
             }
             long score
             if (minutes.size() >= max) {
-                score = minutes[max-1].score
+                score = minutes[max - 1].score
             } else {
                 score = currentScore
             }
@@ -46,8 +127,8 @@ class Day16 {
         for (i in 0..<targets.size()) {
             List<Minute> currentCopy = new ArrayList<Minute>(minutes)
             List<String> path = valves[currentCopy[-1].valve].bestPath(targets[i], [], valves) - [currentCopy[-1].valve]
-            path.each {currentCopy << new Minute(it, currentScore)}
-            findPressure(max, best, valves, currentCopy, new ArrayList<String>(currentlyOpen), targets[i])
+            path.each { currentCopy << new Minute(it, currentScore) }
+            findPressure(max, best, valves, allowedValves, currentCopy, new ArrayList<String>(currentlyOpen), targets[i])
         }
     }
 
@@ -99,8 +180,8 @@ class Day16 {
                 return soFar
             } else {
                 def goodConnections = connections - soFar
-                def paths = goodConnections.collect { all.get(it).internalBestPath(target,new ArrayList<String>(soFar), all) }
-                def validPaths = paths.findAll {it != null}
+                def paths = goodConnections.collect { all.get(it).internalBestPath(target, new ArrayList<String>(soFar), all) }
+                def validPaths = paths.findAll { it != null }
                 if (validPaths.size() == 0) {
                     return null
                 } else {

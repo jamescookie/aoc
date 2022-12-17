@@ -55,6 +55,24 @@ Valve JJ has flow rate=21; tunnel leads to valve II"""
         Day16.part1(InputReader.read("y2022/day16")) == 1986
     }
 
+    def "part2 combination tests"() {
+        expect:
+        Day16.generateCombinations(input) == output
+
+        where:
+        input                | output
+        ['A', 'B']           | [new Day16.Pair(['A'], ['B'])]
+        ['A', 'B', 'C']      | [new Day16.Pair(['A', 'C'], ['B']), new Day16.Pair(['A', 'B'], ['C']), new Day16.Pair(['B', 'C'], ['A'])]
+        ['A', 'B', 'C', 'D'] | [
+                new Day16.Pair(['A', 'B', 'C'], ['D']),
+                new Day16.Pair(['A', 'C', 'D'], ['B']),
+                new Day16.Pair(['B', 'C', 'D'], ['A']),
+                new Day16.Pair(['A', 'B'], ['C', 'D']),
+                new Day16.Pair(['B', 'C'], ['A', 'D']),
+                new Day16.Pair(['C', 'D'], ['A', 'B'])
+        ]
+    }
+
     def "part2 warmup tests"() {
         expect:
         Day16.part2(input) == output
