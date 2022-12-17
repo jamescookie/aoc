@@ -9,30 +9,23 @@ class Day16 {
 
         int max = 31
         AtomicLong best = new AtomicLong(0)
-        findPressure(max, best, valves, [new Minute('AA', [])])
+        findPressure(max, best, valves, [new Minute('AA', 0)], [])
         return best.get()
     }
 
-    protected static void findPressure(int max, AtomicLong best, Map<String, Valve> valves, List<Minute> current, String nextOpen = null) {
-        List<String> currentlyOpen = new ArrayList<>(current[-1].open)
+    // DD (560) BB (325) JJ (441) HH (286) EE (27) CC (12) = 1651
+    protected static void findPressure(int max, AtomicLong best, Map<String, Valve> valves, List<Minute> minutes, List<String> currentlyOpen, String nextOpen = null) {
+        long currentlyScore = minutes[-1].score
         List<String> targets = valves.values().findAll {it.shouldOpen}.collect {it.name} - currentlyOpen - [nextOpen]
-        if (targets.size() == 0 || current.size() >= max) {
-            long score = 0
+        if (targets.size() == 0 || minutes.size() >= max) {
             if (nextOpen != null) {
-                current << new Minute(current[-1].current, currentlyOpen)
-                currentlyOpen = new ArrayList<>(currentlyOpen + [nextOpen])
-                current << new Minute(current[-1].current, currentlyOpen)
+                currentlyScore += (valves.get(nextOpen).pressure * (max - minutes.size() - 1))
             }
-            for (i in 1..<max) {//skip 'AA'
-                def open
-                if (current.size() <= i) {
-                    open = currentlyOpen
-                } else {
-                    open = current[i].open
-                }
-                if (open) {
-                    score += open.collect { valves.get(it).pressure }.sum() as long
-                }
+            long score
+            if (minutes.size() >= max) {
+                score = minutes[max-1].score
+            } else {
+                score = currentlyScore
             }
             if (score > best.get()) {
                 best.set(score)
@@ -40,14 +33,15 @@ class Day16 {
             return
         }
         if (nextOpen != null) {
-            current << new Minute(current[-1].current, new ArrayList<String>(current[-1].open))
+            minutes << new Minute(minutes[-1].valve, currentlyScore)
+            currentlyScore += (valves.get(nextOpen).pressure * (max - minutes.size()))
             currentlyOpen << nextOpen
         }
         for (i in 0..<targets.size()) {
-            List<Minute> currentCopy = new ArrayList<Minute>(current)
-            List<String> path = valves[currentCopy[-1].current].bestPath(targets[i], [], valves) - [currentCopy[-1].current]
-            path.each {currentCopy << new Minute(it, new ArrayList<String>(currentlyOpen))}
-            findPressure(max, best, valves, currentCopy, targets[i])
+            List<Minute> currentCopy = new ArrayList<Minute>(minutes)
+            List<String> path = valves[currentCopy[-1].valve].bestPath(targets[i], [], valves) - [currentCopy[-1].valve]
+            path.each {currentCopy << new Minute(it, currentlyScore)}
+            findPressure(max, best, valves, currentCopy, new ArrayList<String>(currentlyOpen), targets[i])
         }
     }
 
@@ -58,28 +52,28 @@ class Day16 {
     //[['AA':[]],['DD':[]],['CC': ['DD']],['BB':['DD']],['BB':['DD']],['AA':['DD','BB']],]
     //DD 28 mins
     //BB 25 mins
-    //JJ 20 mins
+    //JJ 21 mins
 
     static class Minute {
-        String current
-        List<String> open
+        String valve
+        long score
 
-        Minute(String c,List<String> o) {
-            current = c
-            open = o
+        Minute(String c, long o) {
+            valve = c
+            score = o
         }
 
         String toString() {
-            "['$current':$open]"
+            "['$valve':$score]"
         }
     }
 
     static class Valve {
         List<String> connections = []
         String name
-        boolean open = false
         boolean shouldOpen
         int pressure
+        Map<String, List<String>> bestPaths = [:]
 
         Valve(String input, Map<String, Valve> all) {
             //Valve AA has flow rate=0; tunnels lead to valves DD, II, BB
@@ -93,9 +87,13 @@ class Day16 {
         }
 
         List<String> bestPath(String target, List<String> soFar, Map<String, Valve> all) {
+//            if (bestPaths.containsKey(target)) {
+//                return bestPaths.get(target)
+//            }
             soFar << name
             if (connections.contains(target)) {
                 soFar << target
+//                saveBest(target, soFar)
                 return soFar
             } else {
                 def goodConnections = connections - soFar
@@ -104,8 +102,16 @@ class Day16 {
                 if (validPaths.size() == 0) {
                     return null
                 } else {
-                    return validPaths.min {it.size()}
+                    def best = validPaths.min { it.size() }
+//                    saveBest(target, best)
+                    return best
                 }
+            }
+        }
+
+        protected List<String> saveBest(String target, List<String> soFar) {
+            if (soFar[0] == name) {
+                bestPaths.put(target, new ArrayList<String>(soFar))
             }
         }
     }
