@@ -52,7 +52,7 @@ Valve JJ has flow rate=21; tunnel leads to valve II"""
 
     def "part1"() {
         expect:
-        Day16.part1(InputReader.read("y2022/day16")) == 979
+        Day16.part1(InputReader.read("y2022/day16")) == 1986
     }
 
     def "part2 warmup tests"() {
@@ -61,7 +61,7 @@ Valve JJ has flow rate=21; tunnel leads to valve II"""
 
         where:
         input | output
-        t1    | 0
+        t1    | 1707
     }
 
     def "part2"() {

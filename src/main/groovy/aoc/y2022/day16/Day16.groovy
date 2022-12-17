@@ -87,23 +87,27 @@ class Day16 {
         }
 
         List<String> bestPath(String target, List<String> soFar, Map<String, Valve> all) {
-//            if (bestPaths.containsKey(target)) {
-//                return bestPaths.get(target)
-//            }
+            if (bestPaths.containsKey(target)) {
+                return bestPaths.get(target)
+            }
+            def path = internalBestPath(target, soFar, all)
+            saveBest(target, path)
+            return path
+        }
+
+        List<String> internalBestPath(String target, List<String> soFar, Map<String, Valve> all) {
             soFar << name
             if (connections.contains(target)) {
                 soFar << target
-//                saveBest(target, soFar)
                 return soFar
             } else {
                 def goodConnections = connections - soFar
-                def paths = goodConnections.collect { all.get(it).bestPath(target,new ArrayList<String>(soFar), all) }
+                def paths = goodConnections.collect { all.get(it).internalBestPath(target,new ArrayList<String>(soFar), all) }
                 def validPaths = paths.findAll {it != null}
                 if (validPaths.size() == 0) {
                     return null
                 } else {
                     def best = validPaths.min { it.size() }
-//                    saveBest(target, best)
                     return best
                 }
             }
