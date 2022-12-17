@@ -13,19 +13,25 @@ class Day16 {
         return best.get()
     }
 
-    // DD (560) BB (325) JJ (441) HH (286) EE (27) CC (12) = 1651
+    static part2(String inputString) {
+        Map<String, Valve> valves = [:]
+        inputString.split(System.lineSeparator()).each {new Valve(it, valves)}
+
+        return null
+    }
+
     protected static void findPressure(int max, AtomicLong best, Map<String, Valve> valves, List<Minute> minutes, List<String> currentlyOpen, String nextOpen = null) {
-        long currentlyScore = minutes[-1].score
+        long currentScore = minutes[-1].score
         List<String> targets = valves.values().findAll {it.shouldOpen}.collect {it.name} - currentlyOpen - [nextOpen]
         if (targets.size() == 0 || minutes.size() >= max) {
             if (nextOpen != null) {
-                currentlyScore += (valves.get(nextOpen).pressure * (max - minutes.size() - 1))
+                currentScore += (valves.get(nextOpen).pressure * (max - minutes.size() - 1))
             }
             long score
             if (minutes.size() >= max) {
                 score = minutes[max-1].score
             } else {
-                score = currentlyScore
+                score = currentScore
             }
             if (score > best.get()) {
                 best.set(score)
@@ -33,26 +39,17 @@ class Day16 {
             return
         }
         if (nextOpen != null) {
-            minutes << new Minute(minutes[-1].valve, currentlyScore)
-            currentlyScore += (valves.get(nextOpen).pressure * (max - minutes.size()))
+            minutes << new Minute(minutes[-1].valve, currentScore)
+            currentScore += (valves.get(nextOpen).pressure * (max - minutes.size()))
             currentlyOpen << nextOpen
         }
         for (i in 0..<targets.size()) {
             List<Minute> currentCopy = new ArrayList<Minute>(minutes)
             List<String> path = valves[currentCopy[-1].valve].bestPath(targets[i], [], valves) - [currentCopy[-1].valve]
-            path.each {currentCopy << new Minute(it, currentlyScore)}
+            path.each {currentCopy << new Minute(it, currentScore)}
             findPressure(max, best, valves, currentCopy, new ArrayList<String>(currentlyOpen), targets[i])
         }
     }
-
-    static part2(String inputString) {
-        Integer[] input = inputString.tokenize().collect { it as int }
-        return null
-    }
-    //[['AA':[]],['DD':[]],['CC': ['DD']],['BB':['DD']],['BB':['DD']],['AA':['DD','BB']],]
-    //DD 28 mins
-    //BB 25 mins
-    //JJ 21 mins
 
     static class Minute {
         String valve
