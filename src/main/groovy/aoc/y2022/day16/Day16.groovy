@@ -20,7 +20,7 @@ class Day16 {
         inputString.split(System.lineSeparator()).each { new Valve(it, valves) }
 
         AtomicLong best = new AtomicLong(0)
-        findPressureWithTwo(26, best, valves)
+        findPressureWithTwo(27, best, valves)
 
         return best.get()
     }
@@ -29,7 +29,7 @@ class Day16 {
         //split up targets
         //combine scores
         List<String> allowedValves = valves.values().findAll { it.shouldOpen }.collect { it.name }
-        List<Pair> combinations = generateCombinations(allowedValves)
+        Collection<Pair> combinations = generateCombinations(allowedValves)
 
         combinations.each {
             AtomicLong best1 = new AtomicLong(0)
@@ -44,38 +44,49 @@ class Day16 {
     }
 
     //needs more work
-    static List<Pair> generateCombinations(List<String> input) {
-        List<Pair> subsets = new ArrayList<>();
+    static Collection<Pair> generateCombinations(List<String> input) {
+        HashSet<Pair> subsets = new HashSet<>();
 
-        int k = input.size() / 2
-        int[] s = new int[k]
+        int half = input.size() / 2
+        int[] s = new int[half]
 
-        if (k <= input.size()) {
-            // first index sequence: 0, 1, 2, ...
-            for (int x = 0; (s[x] = x) < k - 1; x++);
-            List<String> left = getSubset(input, s)
-            for (; ;) {
-                int i;
-                // find position of item that can be incremented
-                for (i = k - 1; i >= 0 && s[i] == input.size() - k + i; i--);
-                if (i < 0) {
-                    break;
+
+        for (j in 0..<half) {
+            for (i in 0..<input.size()) {
+                getSubset(input, i, j + 1).forEach {left->
+                    subsets.add(new Pair(left, input - left));
                 }
-                s[i]++;                    // increment this item
-                for (++i; i < k; i++) {    // fill up remaining items
-                    s[i] = s[i - 1] + 1;
-                }
-                subsets.add(new Pair(left, getSubset(input, s)));
             }
         }
+//
+//        if (half <= input.size()) {
+//            // first index sequence: 0, 1, 2, ...
+//            for (int x = 0; (s[x] = x) < half - 1; x++);
+//            List<String> left = getSubset(input, s)
+//            for (; ;) {
+//                int i;
+//                // find position of item that can be incremented
+//                for (i = half - 1; i >= 0 && s[i] == input.size() - half + i; i--);
+//                if (i < 0) {
+//                    break;
+//                }
+//                s[i]++;                    // increment this item
+//                for (++i; i < half; i++) {    // fill up remaining items
+//                    s[i] = s[i - 1] + 1;
+//                }
+//                subsets.add(new Pair(left, getSubset(input, s)));
+//            }
+//        }
 
         return subsets
     }
 
-    static List<String> getSubset(List<String> input, int[] subset) {
-        List<String> result = new ArrayList<>()
-        for (int i = 0; i < subset.length; i++)
-            result << input[subset[i]];
+    static List<List<String>> getSubset(List<String> input, int i, int howMany) {
+        List<List<String>> result = []
+        if (i+howMany > input.size()) return result
+        result << input[i..<i+howMany]
+//        for (j in 1..<howMany+1) {
+//        }
         return result;
     }
 
@@ -95,9 +106,13 @@ class Day16 {
         boolean equals(Object obj) {
             if (obj instanceof Pair) {
                 Pair pt = (Pair) obj
-                return (a == pt.a) && (b == pt.b)
+                return ((a == pt.a) && (b == pt.b)) || ((b == pt.a) && (a == pt.b))
             }
             return super.equals(obj)
+        }
+
+        int hashCode() {
+            return a.hashCode() * b.hashCode()
         }
     }
 
