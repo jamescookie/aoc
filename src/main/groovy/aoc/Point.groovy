@@ -1,6 +1,6 @@
 package aoc
 
-class Point implements Comparable<Point> {
+class Point implements Comparable<Point>, Cloneable {
     public int x
     public int y
 
@@ -46,6 +46,21 @@ class Point implements Comparable<Point> {
     void translate(int dx, int dy) {
         this.x += dx
         this.y += dy
+    }
+
+    void translate(Point d) {
+        this.x += d.x
+        this.y += d.y
+    }
+
+    void translateUndo(Point d) {
+        this.x -= d.x
+        this.y -= d.y
+    }
+
+    @Override
+    Object clone() {
+        new Point(x, y)
     }
 
     @Override
@@ -174,11 +189,11 @@ class Point implements Comparable<Point> {
                 .compare(this, p2)
     }
 
-    static void print(List<Point> points) {
-        print(points.collectEntries { [it, '#' as Character] })
+    static void print(List<Point> points, inverted = true) {
+        print(points.collectEntries { [it, '#' as Character] }, inverted)
     }
 
-    static void print(Map<Point, Character> map) {
+    static void print(Map<Point, Character> map, inverted = true) {
         Set<Point> points = map.keySet()
         int maxX = (points*.x).max() as int
         int maxY = (points*.y).max() as int
@@ -187,7 +202,7 @@ class Point implements Comparable<Point> {
         StringBuilder sb = new StringBuilder()
         def defaultChar = '.' as Character
 
-        for (y in minY..<maxY + 1) {
+        for (y in (inverted ? (minY..<maxY + 1) : (maxY..minY))) {
             for (x in minX..<maxX + 1) {
                 sb.append(map.getOrDefault(new Point(x, y), defaultChar))
             }
