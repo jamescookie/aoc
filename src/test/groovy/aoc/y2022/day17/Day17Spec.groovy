@@ -22,7 +22,7 @@ class Day17Spec extends Specification {
 
     def "part1"() {
         expect:
-        Day17.part1(InputReader.read("y2022/day17"), 2022) == 0
+        Day17.part1(InputReader.read("y2022/day17"), 2022) == 3197
     }
 
     def "part2 warmup tests"() {

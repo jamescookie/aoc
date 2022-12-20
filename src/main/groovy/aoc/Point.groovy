@@ -184,9 +184,9 @@ class Point implements Comparable<Point>, Cloneable {
 
     @Override
     int compareTo(Point p2) {
-        return Comparator.comparingInt({ p -> p.x })
-                .thenComparingInt({ p -> p.y })
-                .compare(this, p2)
+        int i = this.x <=> p2.x
+        if (i != 0) return i
+        return this.y <=> p2.y
     }
 
     static void print(List<Point> points, inverted = true) {

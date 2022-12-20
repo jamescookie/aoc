@@ -14,20 +14,20 @@ class Day17 {
 
     static part1(String input, int count) {
         int shapePointer = 0
-        List<Point> cave = []
-        List<Character> instructions = input.toCharArray() as List
+        int instructionPointer = 0
+        HashSet<Point> cave = new HashSet<>()
 
         for (i in 0..<count) {
             def shape = shapes[shapePointer].collect { it.clone() as Point }
-            int highestPoint = cave*.y.max() ?: 0
+            int highestPoint = (cave*.y.max() ?: 0) as int
             shape*.translate(2, highestPoint + 4)
             boolean falling = true
             while (falling) {
                 Point translate
-                if (instructions.size() == 0) {
-                    instructions = input.toCharArray() as List
+                if (instructionPointer >= input.size()) {
+                    instructionPointer = 0
                 }
-                if (instructions.pop() == '>') {
+                if (input[instructionPointer++] == '>') {
                     translate = new Point(1, 0)
                     if (shape*.x.max() < 6) {
                         shape*.translate(translate)
@@ -54,8 +54,8 @@ class Day17 {
             if (shapePointer >= shapes.size()) {
                 shapePointer = 0
             }
+//            Point.print(cave, false)
         }
-//        Point.print(cave, false)
         return cave*.y.max()
     }
 
@@ -64,7 +64,7 @@ class Day17 {
         return null
     }
 
-    static boolean hasCollided(List<Point> points1, ArrayList<Point> points2) {
+    static boolean hasCollided(List<Point> points1, Set<Point> points2) {
         points1.intersect(points2).size() > 0
     }
 }
