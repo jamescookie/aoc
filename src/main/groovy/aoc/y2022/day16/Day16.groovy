@@ -26,8 +26,6 @@ class Day16 {
     }
 
     protected static void findPressureWithTwo(int max, AtomicLong best, Map<String, Valve> valves) {
-        //split up targets
-        //combine scores
         List<String> allowedValves = valves.values().findAll { it.shouldOpen }.collect { it.name }
         Collection<Pair> combinations = generateCombinations(allowedValves)
 
@@ -43,51 +41,30 @@ class Day16 {
         }
     }
 
-    //needs more work
     static Collection<Pair> generateCombinations(List<String> input) {
         HashSet<Pair> subsets = new HashSet<>();
 
-        int half = input.size() / 2
-        int[] s = new int[half]
-
+        def half = Math.round(input.size() / 2).intValue()
 
         for (j in 0..<half) {
-            for (i in 0..<input.size()) {
-                getSubset(input, i, j + 1).forEach {left->
-                    subsets.add(new Pair(left, input - left));
-                }
+            subset(input, j).forEach { left ->
+                subsets.add(new Pair(left, input - left));
             }
         }
-//
-//        if (half <= input.size()) {
-//            // first index sequence: 0, 1, 2, ...
-//            for (int x = 0; (s[x] = x) < half - 1; x++);
-//            List<String> left = getSubset(input, s)
-//            for (; ;) {
-//                int i;
-//                // find position of item that can be incremented
-//                for (i = half - 1; i >= 0 && s[i] == input.size() - half + i; i--);
-//                if (i < 0) {
-//                    break;
-//                }
-//                s[i]++;                    // increment this item
-//                for (++i; i < half; i++) {    // fill up remaining items
-//                    s[i] = s[i - 1] + 1;
-//                }
-//                subsets.add(new Pair(left, getSubset(input, s)));
-//            }
-//        }
 
         return subsets
     }
 
-    static List<List<String>> getSubset(List<String> input, int i, int howMany) {
+    static List<List<String>> subset(List<String> input, int howMany, List<String> soFar = [], int index = 0) {
         List<List<String>> result = []
-        if (i+howMany > input.size()) return result
-        result << input[i..<i+howMany]
-//        for (j in 1..<howMany+1) {
-//        }
-        return result;
+        for (i in index..<input.size() - howMany) {
+            if (howMany > 0) {
+                result.addAll(subset(input, howMany - 1, soFar + input[i], i + 1))
+            } else {
+                result << soFar + input[i]
+            }
+        }
+        return result
     }
 
     static class Pair {
@@ -169,7 +146,6 @@ class Day16 {
         Map<String, List<String>> bestPaths = [:]
 
         Valve(String input, Map<String, Valve> all) {
-            //Valve AA has flow rate=0; tunnels lead to valves DD, II, BB
             def split = input.split('; ')
             def split1 = (split[0] - 'Valve ').split(' has flow rate=')
             name = split1[0]
@@ -181,35 +157,25 @@ class Day16 {
 
         List<String> bestPath(String target, List<String> soFar, Map<String, Valve> all) {
             if (bestPaths.containsKey(target)) {
-                return bestPaths.get(target)
+                return soFar + bestPaths.get(target)
             }
-            def path = internalBestPath(target, soFar, all)
-            saveBest(target, path)
-            return path
-        }
-
-        List<String> internalBestPath(String target, List<String> soFar, Map<String, Valve> all) {
+            List<String> result = null
             soFar << name
             if (connections.contains(target)) {
                 soFar << target
-                return soFar
+                result = soFar
             } else {
-                def goodConnections = connections - soFar
-                def paths = goodConnections.collect { all.get(it).internalBestPath(target, new ArrayList<String>(soFar), all) }
-                def validPaths = paths.findAll { it != null }
-                if (validPaths.size() == 0) {
-                    return null
-                } else {
-                    def best = validPaths.min { it.size() }
-                    return best
+                List<List<String>> validPaths = (connections - soFar)
+                        .collect { all.get(it).bestPath(target, new ArrayList<String>(soFar), all) }
+                        .findAll { it != null }
+                if (validPaths.size() > 0) {
+                    result = validPaths.min { it.size() }
                 }
             }
-        }
-
-        protected List<String> saveBest(String target, List<String> soFar) {
-            if (soFar[0] == name) {
-                bestPaths.put(target, new ArrayList<String>(soFar))
+            if (result != null) {
+                bestPaths.put(target, new ArrayList<String>(result.subList(result.indexOf(name), result.size())))
             }
+            return result
         }
     }
 }
