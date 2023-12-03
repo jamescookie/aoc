@@ -4,19 +4,20 @@ import aoc.Point
 
 class Day3 {
 
-    public static final String PART = '*'
+    public static final String GEAR = '*'
+    public static final String NUMBER = /[0-9]/
 
     static part1(String inputString) {
-        inputString = inputString.replaceAll(/[^0-9.\n]/, PART)
+        inputString = inputString.replaceAll(/[^0-9.\n]/, GEAR)
         def rows = inputString.tokenize('\n')
-        long result = 0;
+        long result = 0
         String currentNumber = ""
         boolean touching = false
         for (x in 0..<rows.size()) {
             def row = rows[x]
             for (y in 0..<row.size()) {
                 def place = row[y]
-                if (place == '.' || place == PART) {
+                if (place == '.' || place == GEAR) {
                     if (currentNumber && touching) {
                         result += (currentNumber as int)
                     }
@@ -25,7 +26,7 @@ class Day3 {
                 } else {
                     currentNumber += place
                 }
-                touching = currentNumber && (touching || Point.neighboursWithDiagonals(rows, new Point(x, y)).any { p -> rows[p.x][p.y] == PART })
+                touching = currentNumber && (touching || Point.neighboursWithDiagonals(rows, new Point(x, y)).any { p -> rows[p.x][p.y] == GEAR })
             }
             if (currentNumber && touching) {
                 result += (currentNumber as int)
@@ -41,18 +42,16 @@ class Day3 {
 
     static part2(String inputString) {
         def rows = inputString.tokenize('\n')
-        long result = 0;
+        long result = 0
         for (x in 0..<rows.size()) {
             def row = rows[x]
             for (y in 0..<row.size()) {
-                def place = row[y]
-                if (place == PART) {
-                    def all = Point.neighboursWithDiagonals(rows, new Point(x, y)).findAll { p -> rows[p.x][p.y] ==~ /[0-9]/ }
-                    Set<List<Point>> numbers = new HashSet(all.collect { findNumber(it, rows, [it]) })
+                if (row[y] == GEAR) {
+                    def touching = Point.neighboursWithDiagonals(rows, new Point(x, y)).findAll { p -> rows[p.x][p.y] ==~ NUMBER }
+                    def numbers = new HashSet<>(touching.collect { findNumber(it, rows, [it]).sort() })
                     if (numbers.size() == 2) {
-                        def first = numbers.first().collect { rows[it.x][it.y] }.join('') as int
-                        def last = numbers.last().collect { rows[it.x][it.y] }.join('') as int
-                        result += first * last
+                        result += (numbers.first().collect { rows[it.x][it.y] }.join('') as int) *
+                                (numbers.last().collect { rows[it.x][it.y] }.join('') as int)
                     }
                 }
             }
@@ -61,13 +60,12 @@ class Day3 {
     }
 
     static List<Point> findNumber(point, rows, List<Point> found) {
-        def all = Point.neighbours(rows, point).findAll { it.x == point.x && rows[it.x][it.y] ==~ /[0-9]/ }
-        all.each { p ->
+        Point.neighbours(rows, point).findAll { it.x == point.x && rows[it.x][it.y] ==~ NUMBER }.each { p ->
             if (!found.contains(p)) {
                 found << p
                 findNumber(p, rows, found)
             }
         }
-        return found.sort()
+        return found
     }
 }
