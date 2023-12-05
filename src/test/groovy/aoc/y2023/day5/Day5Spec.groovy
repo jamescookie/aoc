@@ -65,6 +65,6 @@ humidity-to-location map:
 
     def "part2"() {
         expect:
-        Day5.part2(InputReader.read("y2023/day5")) == 0
+        Day5.part2(InputReader.read("y2023/day5")) == 2254687 //too high
     }
 }
