@@ -28,7 +28,8 @@ class Day5 {
 
         long result = Long.MAX_VALUE;
         for (int i = 0; i < seedRanges.size(); i++) {
-            for (seed in (seedRanges[i])..<(seedRanges[i] + seedRanges[i+1])) {
+            for (long j = (seedRanges[i]); j < (seedRanges[i] + seedRanges[i+1]); j++) {
+                long seed = j
                 for (List<Entry> thing : almanac) {
                     for (Entry entry : thing) {
                         if (seed >= entry.start && seed <= entry.end) {
