@@ -7,8 +7,8 @@ class Day5 {
         List<List<Entry>> almanac = createAlmanac(input)
 
         List<Long> locations = seeds.collect { seed ->
-            for (List<Entry> thing : almanac) {
-                for (Entry entry : thing) {
+            for (List<Entry> entries : almanac) {
+                for (Entry entry : entries) {
                     if (seed >= entry.start && seed <= entry.end) {
                         seed += entry.diff
                         break
@@ -27,18 +27,16 @@ class Day5 {
         List<List<Entry>> almanac = createAlmanac(input)
 
         long result = Long.MAX_VALUE;
-
-        for (int i = 0; i < seedRanges.size(); i++) {
+        for (int i = 0; i < seedRanges.size(); i += 2) {
             def ranges = [new BigRange(seedRanges[i], seedRanges[i] + seedRanges[i + 1] - 1)]
-            for (List<Entry> thing : almanac) {
+            for (List<Entry> entries : almanac) {
                 def newRanges = []
                 for (BigRange range : ranges) {
-                    newRanges.addAll(findRanges(thing, [range]))
+                    newRanges.addAll(findRanges(entries, [range]))
                 }
                 ranges = newRanges
             }
-            i++
-            def min = ranges.collect{it.from}.min()
+            def min = ranges.collect { it.from }.min()
             if (min < result) {
                 result = min
             }
@@ -67,30 +65,6 @@ class Day5 {
             currentRanges = newCurrentRanges
         }
         result.addAll(currentRanges)
-        return result
-    }
-
-    protected static BigRange findSeedRange(List<List<Entry>> almanac, BigRange currentRange) {
-        def sorted = almanac.pop().sort()
-        BigRange result
-        long previous = 0
-
-        if (currentRange) {
-            for (int i = 0; i < sorted.size(); i++) {
-                def entry = sorted[i]
-                long max = (i == (sorted.size() - 1)) ? Long.MAX_VALUE : (sorted[i + 1].destination - 1)
-                result = new BigRange(previous, max)
-                if (result.overlaps(currentRange)) {
-                    break
-                } else {
-                    previous = max
-                }
-            }
-        }
-        if (almanac) {
-            result = findSeedRange(almanac, result)
-        }
-
         return result
     }
 
@@ -152,23 +126,12 @@ class Day5 {
         }
 
         @Override
-        boolean equals(Object o) {
-            return o instanceof BigRange && this.from == o.from && this.to == o.to
-        }
-
-        @Override
         int compareTo(BigRange o) {
             return this.from <=> o.from
         }
     }
 
-    static class Entry implements Comparable<Entry> {
-        private long zero
-        private long one
-        private long two
-        private long destination
-        private long source
-        private long range
+    static class Entry {
         private long diff
         private long start
         private long end
@@ -176,25 +139,10 @@ class Day5 {
 
         Entry(String s) {
             def tokenize = s.tokenize().collect { it as long }
-            destination = tokenize[0]
-            zero = destination
-            source = tokenize[1]
-            one = source
-            this.range = tokenize[2]
-            two = this.range
-            start = source
-            end = source + this.range
-            diff = destination - source
-            sourceRange = new BigRange(source, source + range - 1)
-        }
-
-        String toString() {
-            return "$destination $source ${this.range}"
-        }
-
-        @Override
-        int compareTo(Entry o) {
-            (destination + diff) <=> (o.destination + o.diff)
+            start = tokenize[1]
+            diff = tokenize[0] - start
+            end = start + tokenize[2] - 1
+            sourceRange = new BigRange(start, end)
         }
     }
 }
