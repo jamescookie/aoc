@@ -2,7 +2,7 @@ package aoc.y2023.day6
 
 class Day6 {
     static part1(String inputString) {
-        def input = inputString.tokenize('\n')*.tokenize(':')*.last()*.tokenize()*.collect { it as int }
+        def input = inputString.tokenize('\n')*.tokenize(':')*.last()*.tokenize()*.collect { it as long }
         def time = input[0]
         def distance = input[1]
         long result = 1
