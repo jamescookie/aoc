@@ -34,6 +34,6 @@ Distance:  9  40  200"""
 
     def "part2"() {
         expect:
-        Day6.part2(InputReader.read("y2023/day6")) == 0
+        Day6.part2(InputReader.read("y2023/day6")) == 42550411
     }
 }
