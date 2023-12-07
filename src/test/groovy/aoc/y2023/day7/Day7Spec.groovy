@@ -32,11 +32,11 @@ QQQJA 483"""
 
         where:
         input  | output
-        t1     | 0
+        t1     | 5905
     }
 
     def "part2"() {
         expect:
-        Day7.part2(InputReader.read("y2023/day7")) == 0
+        Day7.part2(InputReader.read("y2023/day7")) == 246894760
     }
 }
