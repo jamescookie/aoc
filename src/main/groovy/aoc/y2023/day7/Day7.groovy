@@ -28,7 +28,7 @@ class Day7 {
     }
 
     static class Hand implements Comparable<Hand> {
-        public static Map<Integer[], Integer> RANK = [
+        public static Map<List<Integer>, Integer> RANK = [
                 [1, 5]: 7,
                 [2, 4]: 6,
                 [2, 3]: 5,
