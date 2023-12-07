@@ -2,23 +2,13 @@ package aoc.y2023.day7
 
 class Day7 {
     static part1(String inputString) {
-        def input = inputString.tokenize('\n').collect { new HandAndBid(it, false) }.sort()
-        long result = 0
-        for (i in 0..<input.size()) {
-            result += (i+1) * input[i].bid
-        }
-
-        return result
+        return inputString.tokenize('\n').collect { new HandAndBid(it, false) }.sort()
+                .withIndex(1).collect { it, i -> i * it.bid }.sum()
     }
 
     static part2(String inputString) {
-        def input = inputString.tokenize('\n').collect { new HandAndBid(it, true) }.sort()
-        long result = 0
-        for (i in 0..<input.size()) {
-            result += (i+1) * input[i].bid
-        }
-
-        return result
+        return inputString.tokenize('\n').collect { new HandAndBid(it, true) }.sort()
+                .withIndex(1).collect { it, i -> i * it.bid }.sum()
     }
 
     static class HandAndBid implements Comparable<HandAndBid> {
@@ -52,15 +42,14 @@ class Day7 {
 
         Hand(String h, boolean joker) {
             cards = h.toCharArray().collect { new Card(it, joker) }
-            if (joker && cards.any {it.isJoker()}) {
+            if (joker && cards.any { it.isJoker() }) {
                 def newCards = new ArrayList<>(cards)
-                def jokers = newCards.findAll {it.isJoker()}.size()
+                def jokers = newCards.findAll { it.isJoker() }.size()
                 if (jokers == newCards.size()) {
                     rank = 7
                 } else {
                     newCards.removeAll { it.isJoker() }
-                    def by = newCards.groupBy { it.number }
-                    def fake = by.values().sort { it.size() }.last()[0].number
+                    def fake = newCards.groupBy { it.number }.values().sort { it.size() }.last()[0].number
                     for (i in 0..<jokers) {
                         newCards.add(new Card(fake))
                     }
@@ -72,8 +61,8 @@ class Day7 {
         }
 
         protected static int findRank(List<Card> cards) {
-            def by = cards.groupBy { it.number }
-            RANK.get([by.size(), by.values().sort { it.size() }.last().size()])
+            def grouped = cards.groupBy { it.number }
+            RANK.get([grouped.size(), grouped.values().sort { it.size() }.last().size()])
         }
 
         @Override
@@ -107,7 +96,7 @@ class Day7 {
         }
 
         Card(char what, boolean joker) {
-            if (what > '0' && what <= '9') {
+            if (what > ('0' as char) && what <= ('9' as char)) {
                 number = Character.getNumericValue(what)
             } else {
                 number = RANK[what]
@@ -121,16 +110,6 @@ class Day7 {
         @Override
         int compareTo(Card o) {
             return this.number <=> o.number
-        }
-
-        @Override
-        boolean equals(Object o) {
-            return o instanceof Card && this.number == ((Card) o).number
-        }
-
-        @Override
-        String toString() {
-            "" + number
         }
     }
 }
