@@ -57,6 +57,6 @@ XXX = (XXX, XXX)"""
 
     def "part2"() {
         expect:
-        Day8.part2(InputReader.read("y2023/day8")) == 0
+        Day8.part2(InputReader.read("y2023/day8")) == 10241191004509
     }
 }
