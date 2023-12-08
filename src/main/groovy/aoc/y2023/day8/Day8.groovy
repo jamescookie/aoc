@@ -4,23 +4,38 @@ import aoc.y2019.Utils
 
 class Day8 {
     static part1(String inputString) {
-        def input = inputString.tokenize('\n')
-        List<Integer> instructions = input.pop().toCharArray().collect {it == ('R' as char) ? 1 : 0}
-        Map<String, List<String>> maps = input.collectEntries {
-            def line = it.split(' = ')
-            [(line[0]): line[1][1..-2].split(', ')]
-        }
-        List<String> possiblePaths = maps.get('AAA')
-        def stepCount = findPath(instructions, possiblePaths, maps, {it -> it == 'ZZZ'})
+        def input = new Input(inputString)
+        return findPath(input.instructions, input.maps.get('AAA'), input.maps, { it -> it == 'ZZZ' })
+    }
 
-        return stepCount
+    static part2(String inputString) {
+        def input = new Input(inputString)
+        Closure endCondition = { it -> it.endsWith('Z') }
+        return input.maps.keySet().findAll { it.endsWith('A') }
+                .collect { input.maps[it] }
+                .collect { findPath(input.instructions, it, input.maps, endCondition) }
+                .inject(1) { a, b -> Utils.lcm(a, b) }
+    }
+
+    private static class Input {
+        List<Integer> instructions
+        Map<String, List<String>> maps
+
+        Input(String inputString) {
+            def input = inputString.tokenize('\n')
+            instructions = input.pop().toCharArray().collect { it == ('R' as char) ? 1 : 0 }
+            maps = input.collectEntries {
+                def line = it.split(' = ')
+                [(line[0]): line[1][1..-2].split(', ')]
+            }
+        }
     }
 
     protected static long findPath(List<Integer> instructions, def possiblePaths, Map<String, List<String>> maps, Closure endCheck) {
         long stepCount = 0
         boolean found = false
-        def instructionPointer = 0
-        def instruction = instructions[instructionPointer]
+        int instructionPointer = 0
+        int instruction = instructions[instructionPointer]
         while (!found) {
             stepCount++
             def nextPath = possiblePaths[instruction]
@@ -34,43 +49,5 @@ class Day8 {
             }
         }
         stepCount
-    }
-
-    static part2(String inputString) {
-        def input = inputString.tokenize('\n')
-        List<Integer> instructions = input.pop().toCharArray().collect {it == ('R' as char) ? 1 : 0}
-        Map<String, List<String>> maps = input.collectEntries {
-            def line = it.split(' = ')
-            [(line[0]): line[1][1..-2].split(', ')]
-        }
-        long stepCount = 0
-        boolean found = false
-        List<List<String>> possiblePathList = maps.keySet().findAll {it.endsWith('A') }.collect {maps[it]}
-        def instructionPointer = 0
-        def instruction = instructions[instructionPointer]
-
-        def stuff = possiblePathList.collect { possiblePaths ->
-          findPath(instructions, possiblePaths, maps, {it -> it.endsWith('Z')})
-
-        }
-
-
-//        List<String> possiblePaths = maps.get('AAA')
-//        def stepCount = findPath(instructions, possiblePaths, maps, {it -> it == 'ZZZ'})
-//
-//        while (!found) {
-//            stepCount++
-//            def nextPaths = possiblePaths.collect {it[instruction]}
-//            if (nextPaths.every {it.endsWith('Z')}) {
-//                found = true
-//            } else {
-//                possiblePaths = maps.keySet().findAll {nextPaths.contains(it) }.collect {maps[it]}
-//                instructionPointer++
-//                if (instructionPointer == instructions.size()) instructionPointer = 0
-//                instruction = instructions[instructionPointer]
-//            }
-//        }
-
-        return stuff.inject(1) {a,b -> Utils.lcm(a,b)}
     }
 }
