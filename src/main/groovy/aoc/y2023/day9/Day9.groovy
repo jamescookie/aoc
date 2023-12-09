@@ -2,45 +2,39 @@ package aoc.y2023.day9
 
 class Day9 {
     static part1(String inputString) {
-        def input = inputString.tokenize('\n')*.tokenize(' ')*.collect { it as int }
-        long result = 0
-
-        for (def row in input) {
-            def history = [row]
-            while (!history[-1].every {it == 0}) {
-                history.add(diffs(history[-1]))
-            }
-            history = history.reverse()
-            history.pop()
-            int addition = history.pop()[0]
-            for (i in 0..<history.size()) {
-                addition = history[i][-1] + addition
-            }
-            result += addition
-        }
-
-        return result
+        return new Input(inputString).rows
+                .inject(0) { a, b -> a + extrapolate(b, true) }
     }
 
     static part2(String inputString) {
-        def input = inputString.tokenize('\n')*.tokenize(' ')*.collect { it as int }
-        long result = 0
+        return new Input(inputString).rows
+                .inject(0) { a, b -> a + extrapolate(b, false) }
+    }
 
-        for (def row in input) {
-            def history = [row]
-            while (!history[-1].every {it == 0}) {
-                history.add(diffs(history[-1]))
-            }
-            history = history.reverse()
-            history.pop()
-            int addition = history.pop()[0]
-            for (i in 0..<history.size()) {
+    static class Input {
+        List<List<Integer>> rows
+
+        Input(String inputString) {
+            rows = inputString.tokenize('\n')*.split()*.collect { it as int }
+        }
+    }
+
+    static int extrapolate(List<Integer> input, boolean forwards) {
+        def history = [input]
+        while (!history[-1].every { it == 0 }) {
+            history.add(diffs(history[-1]))
+        }
+        history = history.reverse()
+        history.pop()
+        int addition = history.pop()[0]
+        for (i in 0..<history.size()) {
+            if (forwards) {
+                addition = history[i][-1] + addition
+            } else {
                 addition = history[i][0] - addition
             }
-            result += addition
         }
-
-        return result
+        return addition
     }
 
     static List<Integer> diffs(List<Integer> input) {
