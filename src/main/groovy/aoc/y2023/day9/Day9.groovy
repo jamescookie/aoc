@@ -23,8 +23,24 @@ class Day9 {
     }
 
     static part2(String inputString) {
-        Integer[] input = inputString.tokenize().collect { it as int }
-        return null
+        def input = inputString.tokenize('\n')*.tokenize(' ')*.collect { it as int }
+        long result = 0
+
+        for (def row in input) {
+            def history = [row]
+            while (!history[-1].every {it == 0}) {
+                history.add(diffs(history[-1]))
+            }
+            history = history.reverse()
+            history.pop()
+            int addition = history.pop()[0]
+            for (i in 0..<history.size()) {
+                addition = history[i][0] - addition
+            }
+            result += addition
+        }
+
+        return result
     }
 
     static List<Integer> diffs(List<Integer> input) {
