@@ -32,14 +32,100 @@ class Day10 {
         return (loop.size() / 2).intValue()
     }
 
+    static part2(String s) {
+        def input = new Input(s)
+        def loop = [input.start]
+        Optional<Point> next = Optional.of(input.start)
+        while (true) {
+            next = nextPipe(input, next.get(), loop)
+            if (next.isEmpty()) {
+                break
+            } else {
+                loop << next.get()
+            }
+        }
+        def outside = []
+        for (x in 0..<input.rows.size()) {
+            def row = input.rows[x]
+            for (y in 0..<row.size()) {
+                def point = new Point(x, y)
+                if (canGetOut(input, point, loop)) {
+                    input.rows[x][y] = 'O'
+                    outside << point
+                }
+            }
+        }
+        boolean allDone = false
+        while (!allDone) {
+            boolean found = false
+            for (x in 0..<input.rows.size()) {
+                def row = input.rows[x]
+                for (y in 0..<row.size()) {
+                    def point = new Point(x, y)
+                    if (input.rows[x][y] == 'O') {
+                        def neighbours = checkNeighbours(input, point)
+                        if (neighbours) {
+                            found = true
+                            outside << neighbours
+                        } else {
+                            input.rows[x][y] = 'D'
+                        }
+                    }
+                }
+            }
+            allDone = !found
+        }
+        def inside = []
+        for (x in 0..<input.rows.size()) {
+            def row = input.rows[x]
+            for (y in 0..<row.size()) {
+                def point = new Point(x, y)
+                if (input.rows[x][y] == 'P') {
+                    inside << point
+                }
+            }
+        }
+        return inside.size()
+    }
+
+    static boolean canGetOut(def input, Point point, def loop) {
+        if (loop.contains(point)) {
+            return false
+        }
+        def neighbours = Point.neighbours(input.rows, point)
+        if (neighbours.size() < 4) {
+            return true
+        } else {
+            for (Point neighbour in neighbours) {
+                if (input.rows[neighbour.x][neighbour.y] == 'O') {
+                    return true
+                }
+            }
+            input.rows[point.x][point.y] = 'P'
+        }
+        return false
+    }
+
+    static List<Point> checkNeighbours(def input, Point point) {
+        def neighbours = Point.neighbours(input.rows, point)
+        def found = []
+        for (Point neighbour in neighbours) {
+            if (input.rows[neighbour.x][neighbour.y] == 'P') {
+                found << neighbour
+                input.rows[neighbour.x][neighbour.y] = 'O'
+            }
+        }
+        return found
+    }
+
     static Optional<Point> nextPipe(def input, Point currentPoint, List<Point> loop) {
         def points = neighbours(input.rows, currentPoint)
-        String current = input.rows[currentPoint.y][currentPoint.x]
+        String current = input.rows[currentPoint.x][currentPoint.y]
         Optional<Point> nextPoint = Optional.empty()
         for (i in 0..<points.size()) {
             nextPoint = points[i]
             if (nextPoint.isPresent() && !loop.contains(nextPoint.get())) {
-                String nextPiece = input.rows[nextPoint.get().y][nextPoint.get().x]
+                String nextPiece = input.rows[nextPoint.get().x][nextPoint.get().y]
                 if (VALID[current][i].contains(nextPiece)) {
                     break
                 } else {
@@ -50,21 +136,16 @@ class Day10 {
         return nextPoint
     }
 
-    static part2(String s) {
-        return new Input(s).rows
-                .inject(0) { a, b -> a + b.size() }
-    }
-
     static class Input {
         List<List<String>> rows
         Point start
 
         Input(String s) {
             this.rows = s.tokenize('\n').collect { it.toCharArray() }
-            for (y in 0..<rows.size()) {
-                def row = rows[y]
-                for (x in 0..<row.size()) {
-                    if (row[x] == 'S') {
+            for (x in 0..<rows.size()) {
+                def row = rows[x]
+                for (y in 0..<row.size()) {
+                    if (row[y] == 'S') {
                         start = new Point(x, y)
                     }
                 }
@@ -74,13 +155,8 @@ class Day10 {
 
     static List<Optional<Point>> neighbours(input, Point p) {
         List<Point> points = []
-        if (p.y - 1 >= 0) {
-            points << Optional.of(new Point(p.x, p.y - 1))
-        } else {
-            points << Optional.empty()
-        }
-        if (p.x + 1 < input.size()) {
-            points << Optional.of(new Point(p.x + 1, p.y))
+        if (p.x - 1 >= 0) {
+            points << Optional.of(new Point(p.x - 1, p.y))
         } else {
             points << Optional.empty()
         }
@@ -89,8 +165,13 @@ class Day10 {
         } else {
             points << Optional.empty()
         }
-        if (p.x - 1 >= 0) {
-            points << Optional.of(new Point(p.x - 1, p.y))
+        if (p.x + 1 < input.size()) {
+            points << Optional.of(new Point(p.x + 1, p.y))
+        } else {
+            points << Optional.empty()
+        }
+        if (p.y - 1 >= 0) {
+            points << Optional.of(new Point(p.x, p.y - 1))
         } else {
             points << Optional.empty()
         }
