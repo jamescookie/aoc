@@ -34,6 +34,14 @@ LJ.LJ"""
 .|..||..|.
 .L--JL--J.
 .........."""
+    static def t3b = """S------7.
+|F----7|.
+||....||.
+||....||.
+|L-7F-J|.
+|..||..|.
+L--JL--J.
+........."""
     static def t4 = """.F----7F7F7F7F-7....
 .|F--7||||||||FJ....
 .||.FJ||||||||L7....
@@ -76,16 +84,17 @@ L7JLJL-JLJLJL--JLJ.L"""
 
         where:
         input  | output
-//        t1     | 1
-//        t2     | 1
+        t1     | 1
+        t2     | 1
         t3     | 4
         t3a    | 4
+        t3b    | 4
         t4     | 8
         t5     | 10
     }
 
     def "part2"() {
         expect:
-        Day10.part2(InputReader.read("y2023/day10")) == 779 // too high
+        Day10.part2(InputReader.read("y2023/day10")) == 501
     }
 }

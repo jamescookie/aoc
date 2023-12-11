@@ -3,6 +3,7 @@ package aoc.y2023.day10
 import aoc.Point
 
 class Day10 {
+    public static final List<String> JUNCTIONS = ['L', 'J', '7', 'F']
     public static final List<String> VALID_UP = ['|', '7', 'F']
     public static final List<String> VALID_RIGHT = ['-', '7', 'J']
     public static final List<String> VALID_DOWN = ['|', 'L', 'J']
@@ -44,6 +45,7 @@ class Day10 {
                 loop << next.get()
             }
         }
+        adjustStart(input, loop)
         def outside = []
         for (x in 0..<input.rows.size()) {
             def row = input.rows[x]
@@ -55,6 +57,80 @@ class Day10 {
                 }
             }
         }
+        Integer side = null
+        def start = null
+        def end = loop.size()
+        Point startingPoint
+        for (int i = 0; i<end;i++) {
+            def point = loop[i>=loop.size()?i-loop.size():i]
+            String value = input.rows[point.x][point.y]
+            if (!JUNCTIONS.contains(value)) {
+                def points = neighbours(input.rows, point)
+                for (j in 0..<points.size()) {
+                    def neighbour = points[j]
+                    if (!neighbour.isEmpty()) {
+                        neighbour = neighbour.get()
+                        if (input.rows[neighbour.x][neighbour.y] == 'O') {
+                            side = j
+                            startingPoint = point
+                            break
+                        }
+                    }
+                }
+            }
+            if (side) break
+        }
+
+        int offset = loop.indexOf(startingPoint) + 1
+        for (int i = offset; i<loop.size()+offset;i++) {
+            def point = loop[i>=loop.size()?i-loop.size():i]
+            def points = neighbours(input.rows, point)
+            def neighbour = points[side]
+            if (neighbour.isPresent()) {
+                neighbour = neighbour.get()
+                if (input.rows[neighbour.x][neighbour.y] == 'P') {
+                    input.rows[neighbour.x][neighbour.y] = 'O'
+                }
+            }
+            String current = input.rows[point.x][point.y]
+            if (JUNCTIONS.contains(current)) {
+                if (side == 0) {
+                    if (current == '7' || current == 'L') {
+                        side = 1
+                    } else if (current == 'F' || current == 'J') {
+                        side = 3
+                    }
+                } else if (side == 1) {
+                    if (current == '7' || current == 'L') {
+                        side = 0
+                    } else if (current == 'J' || current == 'F') {
+                        side = 2
+                    }
+                } else if (side == 2) {
+                    if (current == 'L' || current == '7') {
+                        side = 3
+                    } else if (current == 'J' || current == 'F') {
+                        side = 1
+                    }
+                } else if (side == 3) {
+                    if (current == 'L' || current == '7') {
+                        side = 2
+                    } else if (current == 'F' || current == 'J') {
+                        side = 0
+                    }
+                }
+                neighbour = points[side]
+                if (neighbour.isPresent()) {
+                    neighbour = neighbour.get()
+                    if (input.rows[neighbour.x][neighbour.y] == 'P') {
+                        input.rows[neighbour.x][neighbour.y] = 'O'
+                    }
+                }
+            }
+        }
+
+
+
         boolean allDone = false
         while (!allDone) {
             boolean found = false
@@ -63,7 +139,7 @@ class Day10 {
                 for (y in 0..<row.size()) {
                     def point = new Point(x, y)
                     if (input.rows[x][y] == 'O') {
-                        def neighbours = checkNeighbours(input, point)
+                        def neighbours = checkNeighbours(input, point, loop)
                         if (neighbours) {
                             found = true
                             outside << neighbours
@@ -88,6 +164,24 @@ class Day10 {
         return inside.size()
     }
 
+    static def adjustStart(def input, def loop) {
+        String first = input.rows[loop[1].x][loop[1].y]
+        String last = input.rows[loop[-1].x][loop[-1].y]
+        if (first == '-' || first == '7' || first == 'J') {
+            if (last == '|' || last == 'J' || last == 'L') {
+                input.rows[loop[0].x][loop[0].y] = 'F'
+            } else {
+                input.rows[loop[0].x][loop[0].y] = '-'
+            }
+        } else if (first == '|' || first == 'J' || first == 'L') {
+            if (last == '-' || last == 'L' || last == 'F') {
+                input.rows[loop[0].x][loop[0].y] = '7'
+            } else {
+                input.rows[loop[0].x][loop[0].y] = '|'
+            }
+        }
+    }
+
     static boolean canGetOut(def input, Point point, def loop) {
         if (loop.contains(point)) {
             return false
@@ -106,7 +200,7 @@ class Day10 {
         return false
     }
 
-    static List<Point> checkNeighbours(def input, Point point) {
+    static List<Point> checkNeighbours(def input, Point point, def loop) {
         def neighbours = Point.neighbours(input.rows, point)
         def found = []
         for (Point neighbour in neighbours) {
@@ -122,17 +216,21 @@ class Day10 {
         def points = neighbours(input.rows, currentPoint)
         String current = input.rows[currentPoint.x][currentPoint.y]
         Optional<Point> nextPoint = Optional.empty()
+        String nextPiece ='S'
         for (i in 0..<points.size()) {
             nextPoint = points[i]
             if (nextPoint.isPresent() && !loop.contains(nextPoint.get())) {
-                String nextPiece = input.rows[nextPoint.get().x][nextPoint.get().y]
+                nextPiece = input.rows[nextPoint.get().x][nextPoint.get().y]
                 if (VALID[current][i].contains(nextPiece)) {
                     break
                 } else {
                     nextPoint = Optional.empty()
                 }
+            } else {
+                nextPoint = Optional.empty()
             }
         }
+//        println(nextPiece)
         return nextPoint
     }
 
