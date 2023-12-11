@@ -40,11 +40,13 @@ class Day11 {
                     }
                 }
             }
+            def done = []
             for (i in 0..<galaxies.size()) {
                 Point galaxy1 = galaxies[i]
+                done << galaxy1
                 for (j in 0..<galaxies.size()) {
                     Point galaxy2 = galaxies[j]
-                    if (galaxy1 != galaxy2) {
+                    if (!done.contains(galaxy2)) {
                         def yPoints = Point.pointsBetweenIncludingLast(galaxy1, new Point(galaxy1.x, galaxy2.y))
                         def xPoints = Point.pointsBetweenIncludingLast(galaxy1, new Point(galaxy2.x, galaxy1.y))
                         def extras = yPoints.findAll { emptyCols.contains(it.y) }.size() +
@@ -53,7 +55,6 @@ class Day11 {
                     }
                 }
             }
-            result = result / 2
         }
     }
 }
