@@ -43,13 +43,13 @@ class Day10 {
         String last = input[loop[-1].x][loop[-1].y]
         if (VALID_RIGHT.contains(first)) {
             if (VALID_DOWN.contains(last)) {
-                input[loop[0].x][loop[0].y] = 'F'
+                input[loop[0].x][loop[0].y] = loop[1].x > loop[-1].x ? 'L' : 'F'
             } else {
                 input[loop[0].x][loop[0].y] = '-'
             }
         } else if (VALID_DOWN.contains(first)) {
             if (VALID_LEFT.contains(last)) {
-                input[loop[0].x][loop[0].y] = '7'
+                input[loop[0].x][loop[0].y] = loop[1].x > loop[-1].x ? '7' : 'J'
             } else {
                 input[loop[0].x][loop[0].y] = '|'
             }
@@ -62,8 +62,7 @@ class Day10 {
      */
     private static void markExits(List<List<String>> input, List<Point> loop) {
         for (x in 0..<input.size()) {
-            def row = input[x]
-            for (y in 0..<row.size()) {
+            for (y in 0..<input[x].size()) {
                 def point = new Point(x, y)
                 boolean canGetOut = false
                 if (!loop.contains(point)) {
