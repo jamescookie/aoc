@@ -4,12 +4,11 @@ import aoc.Point
 
 class Day11 {
     static part1(String s) {
-        def input = new Input(s, 2)
-        return input.result
+        return new Input(s, 2).result
     }
 
     static part2(String s, int expansion) {
-        return  new Input(s, expansion).result
+        return new Input(s, expansion).result
     }
 
     static class Input {
@@ -21,15 +20,15 @@ class Day11 {
 
         Input(String s, int expansion) {
             expansion -= 1
-            List<List<String>> input = s.tokenize('\n').collect { it.toCharArray().collect {it.toString()} }
+            List<List<String>> input = s.tokenize('\n').collect { it.toCharArray().collect { it.toString() } }
             for (i in 0..<input.size()) {
                 rows << input[i]
-                if (input[i].every {it == '.'}) {
+                if (input[i].every { it == '.' }) {
                     this.emptyRows << i
                 }
             }
             for (i in 0..<input[0].size()) {
-                if (input*.get(i).every {it == '.'}) {
+                if (input*.get(i).every { it == '.' }) {
                     emptyCols << i
                 }
             }
@@ -37,7 +36,7 @@ class Day11 {
                 def row = rows[x]
                 for (y in 0..<row.size()) {
                     if (rows[x][y] == '#') {
-                        galaxies << new Point(x,y)
+                        galaxies << new Point(x, y)
                     }
                 }
             }
@@ -46,11 +45,11 @@ class Day11 {
                 for (j in 0..<galaxies.size()) {
                     Point galaxy2 = galaxies[j]
                     if (galaxy1 != galaxy2) {
-                        def size = Point.pointsBetweenExcludingEnds(galaxy1, new Point(galaxy1.x, galaxy2.y)).findAll { emptyCols.contains(it.y) }.size()
-                        size += Point.pointsBetweenExcludingEnds(galaxy1, new Point(galaxy2.x, galaxy1.y)).findAll { emptyRows.contains(it.x) }.size()
-
-                        def distance = Math.abs(galaxy1.x - galaxy2.x) + Math.abs(galaxy1.y - galaxy2.y) + (size * expansion)
-                        result += distance
+                        def yPoints = Point.pointsBetweenIncludingLast(galaxy1, new Point(galaxy1.x, galaxy2.y))
+                        def xPoints = Point.pointsBetweenIncludingLast(galaxy1, new Point(galaxy2.x, galaxy1.y))
+                        def extras = yPoints.findAll { emptyCols.contains(it.y) }.size() +
+                                xPoints.findAll { emptyRows.contains(it.x) }.size()
+                        result += yPoints.size() + xPoints.size() + (extras * expansion)
                     }
                 }
             }
