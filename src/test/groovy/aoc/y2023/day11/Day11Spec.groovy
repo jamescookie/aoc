@@ -22,8 +22,8 @@ class Day11Spec extends Specification {
         Day11.part1(input) == output
 
         where:
-        input  | output
-        t1     | 374
+        input | output
+        t1    | 374
     }
 
     def "part1"() {
@@ -33,15 +33,17 @@ class Day11Spec extends Specification {
 
     def "part2 warmup tests"() {
         expect:
-        Day11.part2(input) == output
+        Day11.part2(input, size) == output
 
         where:
-        input  | output
-        t1     | 0
+        input | size | output
+        t1    | 2    | 374
+        t1    | 10   | 1030
+        t1    | 100  | 8410
     }
 
     def "part2"() {
         expect:
-        Day11.part2(InputReader.read("y2023/day11")) == 0
+        Day11.part2(InputReader.read("y2023/day11"), 1000000) == 692506533832
     }
 }
