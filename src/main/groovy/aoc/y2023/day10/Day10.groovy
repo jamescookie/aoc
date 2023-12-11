@@ -3,7 +3,7 @@ package aoc.y2023.day10
 import aoc.Point
 
 class Day10 {
-    public static final List<String> JUNCTIONS = ['L', 'J', '7', 'F']
+    public static final List<String> CORNERS = ['L', 'J', '7', 'F']
     public static final List<String> VALID_UP = ['|', '7', 'F']
     public static final List<String> VALID_RIGHT = ['-', '7', 'J']
     public static final List<String> VALID_DOWN = ['|', 'L', 'J']
@@ -19,32 +19,12 @@ class Day10 {
     ]
 
     static part1(String s) {
-        def input = new Input(s)
-        def loop = [input.start]
-        Optional<Point> next = Optional.of(input.start)
-        while (true) {
-            next = nextPipe(input, next.get(), loop)
-            if (next.isEmpty()) {
-                break
-            } else {
-                loop << next.get()
-            }
-        }
-        return (loop.size() / 2).intValue()
+        return (new Input(s).loop.size() / 2).intValue()
     }
 
     static part2(String s) {
         def input = new Input(s)
-        def loop = [input.start]
-        Optional<Point> next = Optional.of(input.start)
-        while (true) {
-            next = nextPipe(input, next.get(), loop)
-            if (next.isEmpty()) {
-                break
-            } else {
-                loop << next.get()
-            }
-        }
+        def loop = input.loop
         adjustStart(input, loop)
         def outside = []
         for (x in 0..<input.rows.size()) {
@@ -64,7 +44,7 @@ class Day10 {
         for (int i = 0; i<end;i++) {
             def point = loop[i>=loop.size()?i-loop.size():i]
             String value = input.rows[point.x][point.y]
-            if (!JUNCTIONS.contains(value)) {
+            if (!CORNERS.contains(value)) {
                 def points = neighbours(input.rows, point)
                 for (j in 0..<points.size()) {
                     def neighbour = points[j]
@@ -93,7 +73,7 @@ class Day10 {
                 }
             }
             String current = input.rows[point.x][point.y]
-            if (JUNCTIONS.contains(current)) {
+            if (CORNERS.contains(current)) {
                 if (side == 0) {
                     if (current == '7' || current == 'L') {
                         side = 1
@@ -237,15 +217,26 @@ class Day10 {
     static class Input {
         List<List<String>> rows
         Point start
+        List<Point> loop = []
 
         Input(String s) {
-            this.rows = s.tokenize('\n').collect { it.toCharArray() }
+            this.rows = s.tokenize('\n').collect { it.toCharArray().collect { it.toString() } }
             for (x in 0..<rows.size()) {
                 def row = rows[x]
                 for (y in 0..<row.size()) {
                     if (row[y] == 'S') {
                         start = new Point(x, y)
                     }
+                }
+            }
+            loop = [start]
+            Optional<Point> next = Optional.of(start)
+            while (true) {
+                next = nextPipe(this, next.get(), loop)
+                if (next.isEmpty()) {
+                    break
+                } else {
+                    loop << next.get()
                 }
             }
         }
