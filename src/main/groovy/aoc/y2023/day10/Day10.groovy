@@ -64,25 +64,13 @@ class Day10 {
         for (x in 0..<input.size()) {
             for (y in 0..<input[x].size()) {
                 def point = new Point(x, y)
-                boolean canGetOut = false
                 if (!loop.contains(point)) {
                     def neighbours = Point.neighbours(input, point)
-                    if (neighbours.size() < 4) {
-                        canGetOut = true
+                    if (neighbours.size() < 4 || neighbours.any { input[it.x][it.y] == OUTSIDE }) {
+                        input[x][y] = OUTSIDE
                     } else {
-                        for (Point neighbour in neighbours) {
-                            if (input[neighbour.x][neighbour.y] == OUTSIDE) {
-                                canGetOut = true
-                                break
-                            }
-                        }
-                        if (!canGetOut) {
-                            input[x][y] = POTENTIAL
-                        }
+                        input[x][y] = POTENTIAL
                     }
-                }
-                if (canGetOut) {
-                    input[x][y] = OUTSIDE
                 }
             }
         }
