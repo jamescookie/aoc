@@ -113,7 +113,7 @@ class Day10 {
             }
             if (side) break
         }
-
+        if (!side) return
         int offset = loop.indexOf(point) + 1
         for (int i = offset; i < loop.size() + offset; i++) {
             point = loop[i >= loop.size() ? i - loop.size() : i]

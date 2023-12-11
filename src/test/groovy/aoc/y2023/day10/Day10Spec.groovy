@@ -6,6 +6,8 @@ import spock.lang.Unroll
 
 @Unroll
 class Day10Spec extends Specification {
+    static def t0 = """F7
+LS"""
     static def t1 = """-L|F7
 7S-7|
 L|7||
@@ -26,7 +28,7 @@ LJ.LJ"""
 .L--J.L--J.
 ..........."""
     static def t3a = """..........
-.S------7.
+.F--S---7.
 .|F----7|.
 .||....||.
 .||....||.
@@ -69,6 +71,7 @@ L7JLJL-JLJLJL--JLJ.L"""
 
         where:
         input  | output
+        t0     | 2
         t1     | 4
         t2     | 8
     }
@@ -84,6 +87,7 @@ L7JLJL-JLJLJL--JLJ.L"""
 
         where:
         input  | output
+        t0     | 0
         t1     | 1
         t2     | 1
         t3     | 4
