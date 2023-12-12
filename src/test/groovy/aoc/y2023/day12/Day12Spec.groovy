@@ -33,7 +33,7 @@ class Day12Spec extends Specification {
 
         where:
         input  | output
-        t1     | 0
+        t1     | 525152
     }
 
     def "part2"() {

@@ -2,20 +2,20 @@ package aoc.y2023.day12
 
 class Day12 {
     static part1(String s) {
-        def input = new Input(s)
+        def input = new Input(s,1)
         return input.rows.collect { it.possibilities() }.sum()
     }
 
     static part2(String s) {
-        return new Input(s).rows
-                .inject(0) { a, b -> a + b.size() }
+        def input = new Input(s,5)
+        return input.rows.collect { it.possibilities() }.sum()
     }
 
     static class Input {
         List<Springs> rows
 
-        Input(String s) {
-            rows = s.tokenize('\n').collect { new Springs(it) }
+        Input(String s, int multiples) {
+            rows = s.tokenize('\n').collect { new Springs(it, multiples) }
         }
     }
 
@@ -23,13 +23,18 @@ class Day12 {
         public static final char UNKNOWN = ('?' as char)
         public static final char OPERATIONAL = ('.' as char)
         public static final char DAMAGED = ('#' as char)
-        String map
-        List<Integer> records
+        String map = ""
+        List<Integer> records = []
 
-        Springs(String s) {
+        Springs(String s, int multiples) {
             def tokenize = s.tokenize(' ')
-            map = tokenize[0]
-            records = tokenize[1].tokenize(',').collect {it as int}
+            def integers = tokenize[1].tokenize(',').collect { it as int }
+            String sep = ''
+            for (i in 0..<multiples) {
+                map += sep + tokenize[0]
+                records.addAll(integers)
+                sep = UNKNOWN
+            }
         }
 
         int possibilities() {
