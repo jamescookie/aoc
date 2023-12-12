@@ -20,37 +20,56 @@ class Day12 {
     }
 
     static class Springs {
-        List<String> map
+        public static final char UNKNOWN = ('?' as char)
+        public static final char OPERATIONAL = ('.' as char)
+        public static final char DAMAGED = ('#' as char)
+        String map
         List<Integer> records
 
         Springs(String s) {
             def tokenize = s.tokenize(' ')
-            map = tokenize[0].tokenize('.')
-            records = tokenize[1].tokenize(',')
+            map = tokenize[0]
+            records = tokenize[1].tokenize(',').collect {it as int}
         }
 
         int possibilities() {
-            removeTruths()
-            return 1
+            def matches = checkMatches(map, 0)
+            return matches
         }
 
-        void removeTruths() {
-            int i = 0
-            for (j in 0..<map.size()) {
-                String match = map[j]
-                if (match.size() == records[i]) {
-
+        int checkMatches(String map, Integer start) {
+            String regex = "^[.?]*" + records.collect {"[#?]{$it}"}.join('[.?]+') + "[.?]*\$"
+            assert map ==~ regex
+            char[] chars = map.toCharArray()
+            int result = 0
+            for (i in start..<chars.size()) {
+                char next = chars[i]
+                if (next == UNKNOWN) {
+                    if (checkMatch(chars, i, regex, DAMAGED)) {
+                        if (checkMatch(chars, i, regex, OPERATIONAL)) {
+                            chars[i] = DAMAGED
+                            result += checkMatches(String.valueOf(chars), i)
+                            chars[i] = OPERATIONAL
+                            result += checkMatches(String.valueOf(chars), i)
+                            chars[i] = UNKNOWN
+                            break
+                        } else {
+                            chars[i] = DAMAGED
+                        }
+                    } else {
+                        chars[i] = OPERATIONAL
+                    }
                 }
             }
+            result ?: 1
+        }
 
-            for (final Iterator iterator = records.iterator(); iterator.hasNext();) {
-                int next = iterator.next()
-                String regex = "^[#?]{$next}\$".toString()
-                if (someCondition) {
-                    iterator.remove()
-                }
-                i++
-            }
+        private static boolean checkMatch(char[] chars, int i, String regex, char replacement) {
+            char previous = chars[i]
+            chars[i] = replacement
+            def result = String.valueOf(chars) ==~ regex
+            chars[i] = previous
+            return result
         }
     }
 }
