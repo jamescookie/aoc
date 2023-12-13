@@ -1,6 +1,9 @@
 package aoc.y2023.day13
 
 class Day13 {
+    public static char ASH = ('.' as char)
+    public static char ROCK = ('#' as char)
+
     static part1(String s) {
         def input = new Input(s)
         long result = 0
@@ -16,8 +19,49 @@ class Day13 {
     }
 
     static part2(String s) {
-        return new Input(s).rows
-                .inject(0) { a, b -> a + b.size() }
+        def input = new Input(s)
+        long result = 0
+        for (List<String> puzzle in input.puzzles) {
+            def currentVertical = findVertical(puzzle)
+            def currentHorizontal = findHorizontal(puzzle)
+            boolean found = false
+            for (i in 0..<puzzle.size()) {
+                def row = puzzle[i].toCharArray()
+                for (j in 0..<row.size()) {
+                    flipBit(row, j)
+                    puzzle.remove(i)
+                    puzzle.add(i, String.valueOf(row))
+                    def vertical = findVertical(puzzle)
+                    if (vertical && vertical != currentVertical) {
+                        result += vertical
+                        found = true
+                        break
+                    } else {
+                        def horizontal = findHorizontal(puzzle)
+                        if (horizontal && horizontal != currentHorizontal) {
+                            result += horizontal
+                            found = true
+                            break
+                        }
+                    }
+                    flipBit(row, j)
+                    puzzle.remove(i)
+                    puzzle.add(i, String.valueOf(row))
+                }
+                if (found) {
+                    break
+                }
+            }
+        }
+        return result
+    }
+
+    private static void flipBit(char[] chars, int i) {
+        if (chars[i] == ASH) {
+            chars[i] = ROCK
+        } else if (chars[i] == ROCK) {
+            chars[i] = ASH
+        }
     }
 
     static class Input {
