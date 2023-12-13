@@ -1,19 +1,18 @@
 package aoc.y2023.day13
 
 class Day13 {
-    public static char ASH = ('0' as char)
+    public static char ASH = ('.' as char)
     public static char ROCK = ('#' as char)
 
     static part1(String s) {
         def input = new Input(s)
         long result = 0
+        int value
         for (List<String> puzzle in input.puzzles) {
-            def vertical = findVertical(puzzle, -1)
-            if (vertical) {
-                result += vertical
-            } else {
-                result += findHorizontal(puzzle, -1)
+            if (!(value = findVertical(puzzle))) {
+                value = findHorizontal(puzzle)
             }
+            result += value
         }
         return result
     }
@@ -21,79 +20,68 @@ class Day13 {
     static part2(String s) {
         def input = new Input(s)
         long result = 0
+        int value
+        char[] row
         for (List<String> puzzle in input.puzzles) {
-            def currentVertical = findVertical(puzzle, -1)
-            def currentHorizontal = findHorizontal(puzzle, -1)
-            boolean found = false
+            def currentVertical = findVertical(puzzle)
+            def currentHorizontal = findHorizontal(puzzle)
             for (i in 0..<puzzle.size()) {
-                def row = puzzle[i].toCharArray()
+                row = puzzle[i].toCharArray()
                 for (j in 0..<row.size()) {
-                    flipBit(row, j)
-                    puzzle.remove(i)
-                    puzzle.add(i, String.valueOf(row))
-                    def vertical = findVertical(puzzle, currentVertical)
-                    if (vertical) {
-                        result += vertical
-                        found = true
+                    flipBit(row, j, puzzle, i)
+                    if (value = findVertical(puzzle, currentVertical)) {
                         break
-                    } else {
-                        def horizontal = findHorizontal(puzzle, currentHorizontal)
-                        if (horizontal) {
-                            result += horizontal
-                            found = true
-                            break
-                        }
+                    } else if (value = findHorizontal(puzzle, currentHorizontal)) {
+                        break
                     }
-                    flipBit(row, j)
-                    puzzle.remove(i)
-                    puzzle.add(i, String.valueOf(row))
+                    flipBit(row, j, puzzle, i)
                 }
-                if (found) {
+                if (value) {
+                    result += value
                     break
                 }
             }
         }
         return result
-    }
-
-    private static void flipBit(char[] chars, int i) {
-        if (chars[i] == ASH) {
-            chars[i] = ROCK
-        } else if (chars[i] == ROCK) {
-            chars[i] = ASH
-        }
     }
 
     static class Input {
         List<List<String>> puzzles
 
         Input(String s) {
-            puzzles = s.split('\n\n')*.tokenize('\n')*.collect {it.replaceAll('[.]', '0')}
+            puzzles = s.split('\n\n')*.tokenize('\n')
         }
     }
 
-    static int findVertical(List<String> puzzle, int exclude) {
+    static int findVertical(List<String> puzzle, int exclude = -1) {
+        return findMatch(puzzle, puzzle[0].size() - 1, exclude, 1, {puz, i -> puz*.getAt(i)})
+    }
+
+    static int findHorizontal(List<String> puzzle, int exclude = -1) {
+        return findMatch(puzzle, puzzle.size() - 1, exclude, 100, {puz, i -> puz[i]})
+    }
+
+    static int findMatch(List<String> puzzle, int size, int exclude, int multiplier, Closure getter) {
         int result = 0
-        int size = puzzle[0].size() - 1
         boolean found
         for (i in 0..<size) {
             def potential = i + 1
-            def col1 = puzzle*.getAt(i)
-            def col2 = puzzle*.getAt(potential)
-            if (exclude != potential && col1 == col2) {
+            def first = getter(puzzle, i)
+            def second = getter(puzzle, potential)
+            if (exclude != (potential * multiplier) && first == second) {
                 found = true
                 for (j in 1..<potential) {
                     if (potential + j > size || i - j < 0) {
                         break
                     }
-                    col1 = puzzle*.getAt(i - j)
-                    col2 = puzzle*.getAt(potential + j)
-                    if (col1 != col2) {
+                    first = getter(puzzle, i - j)
+                    second = getter(puzzle, potential + j)
+                    if (first != second) {
                         found = false
                     }
                 }
                 if (found) {
-                    result = potential
+                    result = potential * multiplier
                     break
                 }
             }
@@ -101,32 +89,13 @@ class Day13 {
         return result
     }
 
-    static int findHorizontal(List<String> puzzle, int exclude) {
-        int result = 0
-        int size = puzzle.size() - 1
-        boolean found
-        for (i in 0..<size) {
-            def potential = i + 1
-            def row1 = puzzle[i]
-            def row2 = puzzle[potential]
-            if (exclude != (potential * 100) && row1 == row2) {
-                found = true
-                for (j in 1..<potential) {
-                    if (potential + j > size || i - j < 0) {
-                        break
-                    }
-                    row1 = puzzle[i - j]
-                    row2 = puzzle[potential + j]
-                    if (row1 != row2) {
-                        found = false
-                    }
-                }
-                if (found) {
-                    result = potential * 100
-                    break
-                }
-            }
+    private static void flipBit(char[] chars, int charNumber, List<String> puzzle, int rowNumber) {
+        if (chars[charNumber] == ASH) {
+            chars[charNumber] = ROCK
+        } else if (chars[charNumber] == ROCK) {
+            chars[charNumber] = ASH
         }
-        return result
+        puzzle.remove(rowNumber)
+        puzzle.add(rowNumber, String.valueOf(chars))
     }
 }
