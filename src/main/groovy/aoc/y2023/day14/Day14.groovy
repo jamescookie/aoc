@@ -6,24 +6,28 @@ class Day14 {
     public static char ASH = ('.' as char)
     public static char ROCK = ('#' as char)
     public static char BALL = ('O' as char)
+    public static final Point NORTH = new Point(1, 0)
+    public static final Point WEST = new Point(0, 1)
+    public static final Point SOUTH = new Point(-1, 0)
+    public static final Point EAST = new Point(0, -1)
 
     static part1(String s) {
         def input = new Input(s)
-        input.tilt(new Point(1, 0))
+        input.tilt(NORTH)
         return input.totalLoad()
     }
 
     static part2(String s) {
         def input = new Input(s)
         Map<Integer, Long> pattern = [:]
-        Map<Integer, Integer> result = null
+        Map<Integer, List<Long>> result = null
 
         def cycles = 1000000000
         for (i in 0..<cycles) {
-            input.tilt(new Point(1, 0))
-            input.tilt(new Point(0, 1))
-            input.tilt(new Point(-1, 0))
-            input.tilt(new Point(0, -1))
+            input.tilt(NORTH)
+            input.tilt(WEST)
+            input.tilt(SOUTH)
+            input.tilt(EAST)
             if (i > 100) {
                 pattern.put(i, input.totalLoad())
                 if (result = checkPattern(pattern)) {
@@ -125,6 +129,5 @@ class Day14 {
                 }
             }
         }
-
     }
 }
