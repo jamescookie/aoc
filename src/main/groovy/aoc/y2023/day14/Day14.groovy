@@ -15,14 +15,61 @@ class Day14 {
 
     static part2(String s) {
         def input = new Input(s)
-        for (i in 0..<1000000000) {
+        Map<Integer, Long> pattern = [:]
+        Map<Integer, Integer> result = null
+
+        def cycles = 1000000000
+        for (i in 0..<cycles) {
             input.tilt(new Point(1, 0))
             input.tilt(new Point(0, 1))
             input.tilt(new Point(-1, 0))
             input.tilt(new Point(0, -1))
-            println(input.totalLoad())
+            if (i > 100) {
+                pattern.put(i, input.totalLoad())
+                if (result = checkPattern(pattern)) {
+                    break
+                }
+            }
         }
-        return input.totalLoad()
+        if (result) {
+            def set = result.entrySet()[0]
+            return set.value[((cycles - 1 - set.key) % set.value.size()) - 1]
+        } else {
+            return input.totalLoad()
+        }
+    }
+
+    static Map<Integer, List<Long>> checkPattern(Map<Integer, Long> data) {
+        if (data.size() < 100) {
+            return null
+        }
+        def entries = data.entrySet()
+        List<Long> pattern = []
+        boolean found
+        Map<Integer, Integer> result = null
+        for (i in 0..<(entries.size() - 1)) {
+            pattern << entries[i].value
+            for (int j = (i + 1); j < (entries.size() - pattern.size()); j++) {
+                found = false
+                for (k in 0..<pattern.size()) {
+                    found = true
+                    if (entries[j + k].value != pattern[k]) {
+                        found = false
+                        break
+                    }
+                }
+                if (found) {
+                    j = j + pattern.size() - 1
+                } else {
+                    break
+                }
+            }
+            if (found) {
+                result = [(entries[i].key): pattern]
+                break
+            }
+        }
+        return result
     }
 
     static class Input {
