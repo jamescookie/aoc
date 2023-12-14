@@ -37,11 +37,11 @@ O.#..O.#.#
 
         where:
         input  | output
-        t1     | 0
+        t1     | 64
     }
 
     def "part2"() {
         expect:
-        Day14.part2(InputReader.read("y2023/day14")) == 0
+        Day14.part2(InputReader.read("y2023/day14")) == 102509
     }
 }

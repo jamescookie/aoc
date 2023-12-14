@@ -9,36 +9,54 @@ class Day14 {
 
     static part1(String s) {
         def input = new Input(s)
-        input.tilt()
-        long result = 0
-        for (x in 0..<input.rows.size()) {
-            for (y in 0..<input.rows[x].size()) {
-                if (input.rows[x][y] == BALL) {
-                    result += 1 * (input.rows.size() - x)
-                }
-            }
-        }
-
-        return result
+        input.tilt(new Point(1, 0))
+        return input.totalLoad()
     }
 
     static part2(String s) {
-        return new Input(s).rows
-                .inject(0) { a, b -> a + b.size() }
+        def input = new Input(s)
+        for (i in 0..<1000000000) {
+            input.tilt(new Point(1, 0))
+            input.tilt(new Point(0, 1))
+            input.tilt(new Point(-1, 0))
+            input.tilt(new Point(0, -1))
+            println(input.totalLoad())
+        }
+        return input.totalLoad()
     }
 
     static class Input {
         List<List<Character>> rows
+        int totalRows
+        int totalCols
 
         Input(String s) {
             rows = s.tokenize('\n').collect { it.toCharArray() }
+            totalRows = rows.size() - 1
+            totalCols = rows[0].size() - 1
         }
 
-        void tilt() {
-            for (x in 0..<rows.size()) {
-                for (y in 0..<rows[x].size()) {
+        long totalLoad() {
+            long result = 0
+            for (x in 0..totalRows) {
+                for (y in 0..totalCols) {
+                    if (rows[x][y] == BALL) {
+                        result += 1 * (rows.size() - x)
+                    }
+                }
+            }
+            return result
+        }
+
+        void tilt(Point direction) {
+            int startX = direction.x >= 0 ? 0 : totalRows
+            int endX = direction.x >= 0 ? totalRows : 0
+            int startY = direction.y >= 0 ? 0 : totalCols
+            int endY = direction.y >= 0 ? totalCols : 0
+            for (x in startX..endX) {
+                for (y in startY..endY) {
                     if (rows[x][y] == ASH) {
-                        moveBall(new Point(x, y), new Point(1, 0))
+                        moveBall(new Point(x, y), direction)
                     }
                 }
             }
@@ -48,7 +66,7 @@ class Day14 {
             Point next = new Point(start)
             while (true) {
                 next.translate(translation)
-                if (next.x >= rows.size() || next.y >= rows[0].size()) {
+                if (next.x > totalRows || next.y > totalCols || next.x < 0 || next.y < 0) {
                     return
                 }
                 if (rows[next.x][next.y] == BALL) {
