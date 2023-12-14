@@ -1,6 +1,6 @@
 package aoc.y2019.day12
 
-import aoc.y2019.Utils;
+import aoc.Utils;
 
 class Jupiter {
     List<Moon> moons

@@ -22,8 +22,8 @@ O.#..O.#.#
         Day14.part1(input) == output
 
         where:
-        input  | output
-        t1     | 136
+        input | output
+        t1    | 136
     }
 
     def "part1"() {
@@ -36,8 +36,8 @@ O.#..O.#.#
         Day14.part2(input) == output
 
         where:
-        input  | output
-        t1     | 64
+        input | output
+        t1    | 64
     }
 
     def "part2"() {

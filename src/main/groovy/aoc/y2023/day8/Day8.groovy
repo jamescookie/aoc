@@ -1,6 +1,6 @@
 package aoc.y2023.day8
 
-import aoc.y2019.Utils
+import aoc.Utils
 
 class Day8 {
     static part1(String inputString) {

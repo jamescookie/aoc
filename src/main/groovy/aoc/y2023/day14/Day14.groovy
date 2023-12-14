@@ -1,6 +1,7 @@
 package aoc.y2023.day14
 
 import aoc.Point
+import aoc.Utils
 
 class Day14 {
     public static char ASH = ('.' as char)
@@ -19,61 +20,25 @@ class Day14 {
 
     static part2(String s) {
         def input = new Input(s)
-        Map<Integer, Long> pattern = [:]
+        List<Long> data = []
         Map<Integer, List<Long>> result = null
-
         def cycles = 1000000000
         for (i in 0..<cycles) {
             input.tilt(NORTH)
             input.tilt(WEST)
             input.tilt(SOUTH)
             input.tilt(EAST)
-            if (i > 100) {
-                pattern.put(i, input.totalLoad())
-                if (result = checkPattern(pattern)) {
-                    break
-                }
+            data.add(input.totalLoad())
+            if (result = Utils.checkPattern(data, 10)) {
+                break
             }
         }
         if (result) {
             def set = result.entrySet()[0]
-            return set.value[((cycles - 1 - set.key) % set.value.size()) - 1]
+            return set.value[((cycles - 1 - set.key) % set.value.size())]
         } else {
             return input.totalLoad()
         }
-    }
-
-    static Map<Integer, List<Long>> checkPattern(Map<Integer, Long> data) {
-        if (data.size() < 100) {
-            return null
-        }
-        def entries = data.entrySet()
-        List<Long> pattern = []
-        boolean found
-        Map<Integer, Integer> result = null
-        for (i in 0..<(entries.size() - 1)) {
-            pattern << entries[i].value
-            for (int j = (i + 1); j < (entries.size() - pattern.size()); j++) {
-                found = false
-                for (k in 0..<pattern.size()) {
-                    found = true
-                    if (entries[j + k].value != pattern[k]) {
-                        found = false
-                        break
-                    }
-                }
-                if (found) {
-                    j = j + pattern.size() - 1
-                } else {
-                    break
-                }
-            }
-            if (found) {
-                result = [(entries[i].key): pattern]
-                break
-            }
-        }
-        return result
     }
 
     static class Input {
