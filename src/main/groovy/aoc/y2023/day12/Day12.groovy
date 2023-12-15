@@ -2,12 +2,12 @@ package aoc.y2023.day12
 
 class Day12 {
     static part1(String s) {
-        def input = new Input(s,1)
+        def input = new Input(s, 1)
         return input.rows.collect { it.possibilities() }.sum()
     }
 
     static part2(String s) {
-        def input = new Input(s,5)
+        def input = new Input(s, 5)
         return input.rows.collect { it.possibilities() }.sum()
     }
 
@@ -25,6 +25,7 @@ class Day12 {
         public static final char DAMAGED = ('#' as char)
         String map = ""
         List<Integer> records = []
+        Map<String, Map<Integer, Integer>> cache = [:]
 
         Springs(String s, int multiples) {
             def tokenize = s.tokenize(' ')
@@ -38,24 +39,25 @@ class Day12 {
         }
 
         int possibilities() {
-            def matches = checkMatches(map, 0)
+            long start = System.currentTimeMillis()
+            def matches = checkMatches(map.toCharArray(), 0, "^[.?]*" + records.collect { "[#?]{$it}" }.join('[.?]+') + "[.?]*\$")
+            println "Got $matches for $map in ${System.currentTimeMillis() - start}"
             return matches
         }
 
-        int checkMatches(String map, Integer start) {
-            String regex = "^[.?]*" + records.collect {"[#?]{$it}"}.join('[.?]+') + "[.?]*\$"
-            assert map ==~ regex
-            char[] chars = map.toCharArray()
+        int checkMatches(char[] chars, Integer start, String regex) {
             int result = 0
+            char next
             for (i in start..<chars.size()) {
-                char next = chars[i]
+                next = chars[i]
                 if (next == UNKNOWN) {
-                    if (checkMatch(chars, i, regex, DAMAGED)) {
-                        if (checkMatch(chars, i, regex, OPERATIONAL)) {
+                    chars[i] = DAMAGED
+                    if (String.valueOf(chars) ==~ regex) {
+                        chars[i] = OPERATIONAL
+                        if (String.valueOf(chars) ==~ regex) {
+                            result += checkMatches(chars, i, regex)
                             chars[i] = DAMAGED
-                            result += checkMatches(String.valueOf(chars), i)
-                            chars[i] = OPERATIONAL
-                            result += checkMatches(String.valueOf(chars), i)
+                            result += checkMatches(chars, i, regex)
                             chars[i] = UNKNOWN
                             break
                         } else {
@@ -64,17 +66,10 @@ class Day12 {
                     } else {
                         chars[i] = OPERATIONAL
                     }
+                    chars[i] = UNKNOWN
                 }
             }
-            result ?: 1
-        }
-
-        private static boolean checkMatch(char[] chars, int i, String regex, char replacement) {
-            char previous = chars[i]
-            chars[i] = replacement
-            def result = String.valueOf(chars) ==~ regex
-            chars[i] = previous
-            return result
+            return result ?: 1
         }
     }
 }
