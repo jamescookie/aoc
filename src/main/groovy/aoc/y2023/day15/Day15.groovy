@@ -2,8 +2,7 @@ package aoc.y2023.day15
 
 class Day15 {
     static part1(String s) {
-        def input = new Input(s.trim())
-        return input.steps.collect { hash(it) }.sum()
+        return new Input(s.trim()).steps.collect { hash(it) }.sum()
     }
 
     static part2(String s) {
@@ -29,7 +28,7 @@ class Day15 {
         for (i in 0..<boxes.size()) {
             def box = boxes[i]
             for (j in 0..<box.size()) {
-                result += ((i+1) * (j+1)* box[j].focus)
+                result += ((i + 1) * (j + 1) * box[j].focus)
             }
         }
         return result
@@ -46,7 +45,7 @@ class Day15 {
     static class Lens {
         String label
         int focus
-        long box
+
         Lens(String s) {
             if (s.contains('=')) {
                 def tokenize = s.tokenize('=')
@@ -55,12 +54,11 @@ class Day15 {
             } else {
                 label = s[0..-2]
             }
-            this.box = hash(label)
         }
 
         @Override
         int hashCode() {
-            this.box.intValue()
+            hash(label)
         }
 
         @Override
@@ -69,8 +67,8 @@ class Day15 {
         }
     }
 
-    static long hash(String s) {
-        long result = 0
+    static int hash(String s) {
+        int result = 0
         def chars = s.toCharArray()
         for (def character in chars) {
             result += character
