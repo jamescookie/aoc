@@ -1,21 +1,32 @@
 package aoc.y2023.day12
 
+import java.util.concurrent.Callable
+import java.util.concurrent.Executors
+import java.util.concurrent.Future
+import java.util.regex.Matcher
+
 class Day12 {
     static part1(String s) {
-        def input = new Input(s,1)
-        return input.rows.collect { it.possibilities() }.sum()
+        return new Input(s, 1).rows.collect { it.possibilities() }.sum()
     }
 
     static part2(String s) {
-        def input = new Input(s,5)
-        return input.rows.collect { it.possibilities() }.sum()
+        def rows = new Input(s, 5).rows
+        def threadPool = Executors.newFixedThreadPool(rows.size())
+        try {
+            return rows.collect {
+                threadPool.submit({ -> it.possibilities() } as Callable)
+            }.collect { it.get() }.sum()
+        } finally {
+            threadPool.shutdown()
+        }
     }
 
     static class Input {
         List<Springs> rows
 
         Input(String s, int multiples) {
-            rows = s.tokenize('\n').collect { new Springs(it, multiples) }
+            this.rows = s.tokenize('\n').collect { new Springs(it, multiples) }
         }
     }
 
@@ -25,7 +36,6 @@ class Day12 {
         public static final char DAMAGED = ('#' as char)
         String map = ""
         List<Integer> records = []
-        Map<String, Map<Integer, Integer>> cache = [:]
 
         Springs(String s, int multiples) {
             def tokenize = s.tokenize(' ')
@@ -38,45 +48,45 @@ class Day12 {
             }
         }
 
-        int possibilities() {
+        long possibilities() {
             long start = System.currentTimeMillis()
             def matches = checkMatches(map, 0, new ArrayList<>(records), [:])
             println "Got $matches for $map in ${System.currentTimeMillis() - start}"
             return matches
         }
 
-        static int checkMatches(String map, Integer start, List<Integer> records, Map<String, Map<List<Integer>, Integer>> cache) {
+        static long checkMatches(String map, Integer start, List<Integer> records, Map<String, Map<List<Integer>, Long>> cache) {
+            Matcher matcher
+            int removed
             for (i in 0..<records.size()) {
-                int record = records[0]
-                def matcher = map =~ "^([.]*[#]{$record})[.].*"
+                matcher = map =~ '^([.]*[#]{' + records[0] + '})[.].*'
                 if (matcher.find()) {
-                    def removed = matcher[0][1].size()
+                    removed = matcher[0][1].size()
                     map = map.substring(removed)
-                    if (start) start -= removed
+                    start -= removed
                     records.pop()
                 } else {
                     break
                 }
             }
-            def matcher = map =~ "^([.]+).*"
+            matcher = map =~ /^([.]+).*/
             if (matcher.find()) {
-                def removed = matcher[0][1].size()
+                removed = matcher[0][1].size()
                 map = map.substring(removed)
                 start -= removed
             }
-            if (cache.containsKey(map)) {
-                if (cache.get(map).containsKey(records)) {
-                    return cache.get(map).get(records)
-                }
+            if (!cache.containsKey(map)) {
+                cache.put(map, [:])
+            }
+            if (cache.get(map).containsKey(records)) {
+                return cache.get(map).get(records)
             }
             if (start < 0) start = 0
-            String regex = "^[.?]*" + records.collect {"[#?]{$it}"}.join('[.?]+') + "[.?]*\$"
-            assert map ==~ regex
+            String regex = '^[.?]*' + records.collect { "[#?]{$it}" }.join('[.?]+') + '[.?]*$'
             char[] chars = map.toCharArray()
-            int result = 0
+            long result = 0
             for (i in start..<chars.size()) {
-                char next = chars[i]
-                if (next == UNKNOWN) {
+                if (chars[i] == UNKNOWN) {
                     chars[i] = DAMAGED
                     if (String.valueOf(chars) ==~ regex) {
                         chars[i] = OPERATIONAL
@@ -93,9 +103,6 @@ class Day12 {
                         chars[i] = OPERATIONAL
                     }
                 }
-            }
-            if (!cache.containsKey(map)) {
-                cache.put(map, [:])
             }
             def finalResult = result ?: 1
             cache.get(map).put(records, finalResult)
