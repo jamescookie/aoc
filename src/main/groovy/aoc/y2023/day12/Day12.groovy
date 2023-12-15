@@ -2,12 +2,12 @@ package aoc.y2023.day12
 
 class Day12 {
     static part1(String s) {
-        def input = new Input(s, 1)
+        def input = new Input(s,1)
         return input.rows.collect { it.possibilities() }.sum()
     }
 
     static part2(String s) {
-        def input = new Input(s, 5)
+        def input = new Input(s,5)
         return input.rows.collect { it.possibilities() }.sum()
     }
 
@@ -40,24 +40,50 @@ class Day12 {
 
         int possibilities() {
             long start = System.currentTimeMillis()
-            def matches = checkMatches(map.toCharArray(), 0, "^[.?]*" + records.collect { "[#?]{$it}" }.join('[.?]+') + "[.?]*\$")
+            def matches = checkMatches(map, 0, new ArrayList<>(records), [:])
             println "Got $matches for $map in ${System.currentTimeMillis() - start}"
             return matches
         }
 
-        int checkMatches(char[] chars, Integer start, String regex) {
+        static int checkMatches(String map, Integer start, List<Integer> records, Map<String, Map<List<Integer>, Integer>> cache) {
+            for (i in 0..<records.size()) {
+                int record = records[0]
+                def matcher = map =~ "^([.]*[#]{$record})[.].*"
+                if (matcher.find()) {
+                    def removed = matcher[0][1].size()
+                    map = map.substring(removed)
+                    if (start) start -= removed
+                    records.pop()
+                } else {
+                    break
+                }
+            }
+            def matcher = map =~ "^([.]+).*"
+            if (matcher.find()) {
+                def removed = matcher[0][1].size()
+                map = map.substring(removed)
+                start -= removed
+            }
+            if (cache.containsKey(map)) {
+                if (cache.get(map).containsKey(records)) {
+                    return cache.get(map).get(records)
+                }
+            }
+            if (start < 0) start = 0
+            String regex = "^[.?]*" + records.collect {"[#?]{$it}"}.join('[.?]+') + "[.?]*\$"
+            assert map ==~ regex
+            char[] chars = map.toCharArray()
             int result = 0
-            char next
             for (i in start..<chars.size()) {
-                next = chars[i]
+                char next = chars[i]
                 if (next == UNKNOWN) {
                     chars[i] = DAMAGED
                     if (String.valueOf(chars) ==~ regex) {
                         chars[i] = OPERATIONAL
                         if (String.valueOf(chars) ==~ regex) {
-                            result += checkMatches(chars, i, regex)
+                            result += checkMatches(String.valueOf(chars), i + 1, new ArrayList<>(records), cache)
                             chars[i] = DAMAGED
-                            result += checkMatches(chars, i, regex)
+                            result += checkMatches(String.valueOf(chars), i + 1, new ArrayList<>(records), cache)
                             chars[i] = UNKNOWN
                             break
                         } else {
@@ -66,10 +92,14 @@ class Day12 {
                     } else {
                         chars[i] = OPERATIONAL
                     }
-                    chars[i] = UNKNOWN
                 }
             }
-            return result ?: 1
+            if (!cache.containsKey(map)) {
+                cache.put(map, [:])
+            }
+            def finalResult = result ?: 1
+            cache.get(map).put(records, finalResult)
+            finalResult
         }
     }
 }

@@ -6,6 +6,8 @@ import spock.lang.Unroll
 
 @Unroll
 class Day12Spec extends Specification {
+    // 1,     4, 1,  1,    4,     10
+    // 1, 16384, 1, 16, 2500, 506250
     static def t1 = """???.### 1,1,3
 .??..??...?##. 1,1,3
 ?#?#?#?#?#?#?#? 1,3,1,6
