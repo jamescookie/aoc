@@ -7,8 +7,32 @@ class Day15 {
     }
 
     static part2(String s) {
-        return new Input(s).steps
-                .inject(0) { a, b -> a + b.size() }
+        def input = new Input(s.trim())
+        List<List<Lens>> boxes = new ArrayList<>()
+        for (i in 0..<256) {
+            boxes.add([])
+        }
+        for (def step in input.steps) {
+            def lens = new Lens(step)
+            def box = boxes[lens.hashCode()]
+            if (lens.focus) {
+                if (box.contains(lens)) {
+                    box.get(box.indexOf(lens)).focus = lens.focus
+                } else {
+                    box.add(lens)
+                }
+            } else {
+                box.remove(lens)
+            }
+        }
+        def result = 0
+        for (i in 0..<boxes.size()) {
+            def box = boxes[i]
+            for (j in 0..<box.size()) {
+                result += ((i+1) * (j+1)* box[j].focus)
+            }
+        }
+        return result
     }
 
     static class Input {
@@ -16,6 +40,32 @@ class Day15 {
 
         Input(String s) {
             steps = s.tokenize(',')
+        }
+    }
+
+    static class Lens {
+        String label
+        int focus
+        long box
+        Lens(String s) {
+            if (s.contains('=')) {
+                def tokenize = s.tokenize('=')
+                label = tokenize[0]
+                focus = tokenize[1] as int
+            } else {
+                label = s[0..-2]
+            }
+            this.box = hash(label)
+        }
+
+        @Override
+        int hashCode() {
+            this.box.intValue()
+        }
+
+        @Override
+        boolean equals(Object obj) {
+            return obj instanceof Lens && this.label == obj.label
         }
     }
 
