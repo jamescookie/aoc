@@ -21,19 +21,19 @@ class Day16 {
     ]
 
     static part1(String s) {
-        return findBeam(new Input(s).rows, new Point(0, 0), EAST, []).size()
+        return new HashSet<>(findBeam(new Input(s).rows, new Point(0, 0), EAST, [])).size()
     }
 
     static part2(String s) {
         def input = new Input(s)
         List<Integer> scores = []
         for (x in 0..<input.rows.size()) {
-            scores << findBeam(input.rows, new Point(x, 0), EAST, []).size()
-            scores << findBeam(input.rows, new Point(x, input.rows.size() - 1), WEST, []).size()
+            scores << new HashSet<>(findBeam(input.rows, new Point(x, 0), EAST, [])).size()
+            scores << new HashSet<>(findBeam(input.rows, new Point(x, input.rows.size() - 1), WEST, [])).size()
         }
         for (y in 0..<input.rows[0].size()) {
-            scores << findBeam(input.rows, new Point(0, y), SOUTH, []).size()
-            scores << findBeam(input.rows, new Point(input.rows[0].size() - 1, y), NORTH, []).size()
+            scores << new HashSet<>(findBeam(input.rows, new Point(0, y), SOUTH, [])).size()
+            scores << new HashSet<>(findBeam(input.rows, new Point(input.rows[0].size() - 1, y), NORTH, [])).size()
         }
         return scores.max()
     }
@@ -46,8 +46,8 @@ class Day16 {
         }
     }
 
-    static Set<Point> findBeam(List<List<Character>> rows, Point next, Point direction, def alreadyHit) {
-        Set<Point> points = []
+    static List<Point> findBeam(List<List<Character>> rows, Point next, Point direction, def alreadyHit) {
+        List<Point> points = []
         if (!Point.outOfBounds(rows, next) && !alreadyHit.contains([(next): direction])) {
             char current
             while (true) {
