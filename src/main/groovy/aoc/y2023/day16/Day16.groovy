@@ -21,9 +21,7 @@ class Day16 {
     ]
 
     static part1(String s) {
-        def input = new Input(s)
-        Set<Point> points = findBeam(input.rows, new Point(0, 0), EAST, [])
-        return points.size()
+        return findBeam(new Input(s).rows, new Point(0, 0), EAST, []).size()
     }
 
     static part2(String s) {
@@ -31,11 +29,11 @@ class Day16 {
         List<Integer> scores = []
         for (x in 0..<input.rows.size()) {
             scores << findBeam(input.rows, new Point(x, 0), EAST, []).size()
-            scores << findBeam(input.rows, new Point(x, input.rows.size()-1), WEST, []).size()
+            scores << findBeam(input.rows, new Point(x, input.rows.size() - 1), WEST, []).size()
         }
         for (y in 0..<input.rows[0].size()) {
             scores << findBeam(input.rows, new Point(0, y), SOUTH, []).size()
-            scores << findBeam(input.rows, new Point(input.rows[0].size()-1, y), NORTH, []).size()
+            scores << findBeam(input.rows, new Point(input.rows[0].size() - 1, y), NORTH, []).size()
         }
         return scores.max()
     }
@@ -44,7 +42,7 @@ class Day16 {
         List<List<Character>> rows
 
         Input(String s) {
-            rows = s.tokenize('\n').collect { it.toCharArray() }
+            rows = s.tokenize('\n').collect { it.toCharArray() as List<Character> }
         }
     }
 
