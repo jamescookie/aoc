@@ -48,9 +48,10 @@ class Point implements Comparable<Point>, Cloneable {
         this.y += dy
     }
 
-    void translate(Point d) {
+    Point translate(Point d) {
         this.x += d.x
         this.y += d.y
+        return this
     }
 
     void translateUndo(Point d) {
@@ -79,6 +80,10 @@ class Point implements Comparable<Point>, Cloneable {
 
     String toString() {
         x + ',' + y
+    }
+
+    static boolean outOfBounds(input, Point p) {
+        return p.x < 0 || p.y < 0 || p.x >= input.size() || p.y >= input[0].size()
     }
 
     static Set<Point> neighbours(input, Point p) {
