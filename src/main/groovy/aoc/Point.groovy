@@ -66,16 +66,12 @@ class Point implements Comparable<Point>, Cloneable {
 
     @Override
     int hashCode() {
-        return x.hashCode() * y.hashCode()
+        return x * y
     }
 
     @Override
     boolean equals(Object obj) {
-        if (obj instanceof Point) {
-            Point pt = (Point) obj
-            return (x == pt.x) && (y == pt.y)
-        }
-        return super.equals(obj)
+        return obj instanceof Point ? (x == ((Point) obj).x) && (y == ((Point) obj).y) : false
     }
 
     String toString() {
