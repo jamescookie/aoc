@@ -87,11 +87,15 @@ class Point implements Comparable<Point>, Cloneable {
     }
 
     static Set<Point> neighbours(input, Point p) {
+        return neighbours(input.size(), input[p.x].size(), 0, 0, p)
+    }
+
+    static Set<Point> neighbours(int maxX, int maxY, int minX, int minY, Point p) {
         Set<Point> points = []
-        if (p.y - 1 >= 0) points << new Point(p.x, p.y - 1)
-        if (p.y + 1 < input[p.x].size()) points << new Point(p.x, p.y + 1)
-        if (p.x - 1 >= 0) points << new Point(p.x - 1, p.y)
-        if (p.x + 1 < input.size()) points << new Point(p.x + 1, p.y)
+        if (p.y - 1 >= minY) points << new Point(p.x, p.y - 1)
+        if (p.y + 1 < maxY) points << new Point(p.x, p.y + 1)
+        if (p.x - 1 >= minX) points << new Point(p.x - 1, p.y)
+        if (p.x + 1 < maxX) points << new Point(p.x + 1, p.y)
         return points
     }
 
