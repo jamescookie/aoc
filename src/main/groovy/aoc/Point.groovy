@@ -38,6 +38,10 @@ class Point implements Comparable<Point>, Cloneable {
         this.y = (int) Math.floor(y + 0.5)
     }
 
+    Point diff(Point d) {
+        new Point(this.x - d.x, this.y - d.y)
+    }
+
     void move(int x, int y) {
         this.x = x
         this.y = y
