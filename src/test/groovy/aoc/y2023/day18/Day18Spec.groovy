@@ -6,6 +6,16 @@ import spock.lang.Unroll
 
 @Unroll
 class Day18Spec extends Specification {
+    static def t0 = """R 12 (#70c710)
+U 4 (#70c710)
+L 8 (#70c710)
+U 3 (#70c710)
+R 9 (#70c710)
+D 2 (#70c710)
+R 7 (#70c710)
+D 10 (#70c710)
+L 20 (#70c710)
+U 5 (#70c710)"""
     static def t1 = """R 6 (#70c710)
 D 5 (#0dc571)
 L 2 (#5713f0)
@@ -27,12 +37,13 @@ U 2 (#7a21e3)"""
 
         where:
         input  | output
+        t0     | (21*6) + (9*3) + (2*17) + (2*10)
         t1     | 62
     }
 
     def "part1"() {
         expect:
-        Day18.part1(InputReader.read("y2023/day18")) == 74074 //too high
+        Day18.part1(InputReader.read("y2023/day18")) == 74074
     }
 
     def "part2 warmup tests"() {
@@ -41,7 +52,7 @@ U 2 (#7a21e3)"""
 
         where:
         input  | output
-        t1     | 0
+        t1     | 952408144115
     }
 
     def "part2"() {

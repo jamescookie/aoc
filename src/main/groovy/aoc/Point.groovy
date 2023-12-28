@@ -199,7 +199,8 @@ class Point implements Comparable<Point>, Cloneable {
     }
 
     static void print(List<Point> points, inverted = true) {
-        print(points.collectEntries { [it, '#' as Character] }, inverted)
+        Point origin = new Point(0,0)
+        print(points.collectEntries {it == origin ?  [it, 'S' as Character] : [it, '#' as Character] }, inverted)
     }
 
     static void print(Map<Point, Character> map, inverted = true) {
